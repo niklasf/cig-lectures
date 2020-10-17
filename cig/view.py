@@ -17,10 +17,16 @@ def layout(title: str, body: List[h]) -> h:
 
 def login() -> h:
     return layout("Login", [
-        h("h1")("Step 1: Login"),
-        h("form")(
-            h("input", type="email", placeholder="max.mustermann@tu-clausthal.de"),
-            h("button")("Send login link")
+        h("h1")("Step 1/3: Login"),
+        h("form", method="POST")(
+            h("input", type="email", placeholder="max.mustermann@tu-clausthal.de", required=True),
+            h("button", type="submit")("Send login link")
         ),
-        h("h1")("Step 2: Sign up for lecture")
+    ])
+
+
+def link_sent() -> h:
+    return layout("Link sent", [
+        h("h1")("Step 2/3: Link sent"),
+        h("p")("Check your inbox.")
     ])
