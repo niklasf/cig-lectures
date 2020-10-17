@@ -18,6 +18,8 @@ def login(req: aiohttp.web.Request) -> aiohttp.web.Response:
 
 @routes.post("/")
 def login(req: aiohttp.web.Request) -> aiohttp.web.Response:
+
+
     return aiohttp.web.Response(
         text=cig.view.link_sent().render(),
         content_type="text/html")
