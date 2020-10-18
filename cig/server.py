@@ -16,11 +16,11 @@ from typing import List
 def normalize_email(email: str) -> str:
     email = email.strip().lower()
     if not all(c.isalnum() or c in "@-." for c in email) or email.count("@") != 1:
-        raise ValueError("Invalid email address")
+        raise ValueError("Invalid email address.")
     if not email.endswith("@tu-clausthal.de"):
-        raise ValueError("Please use your address (@tu-clausthal.de)")
+        raise ValueError("Please use your address (@tu-clausthal.de).")
     if any(c.isdigit() for c in email):
-        raise ValueError("Please use the long form of your email address (with your name)")
+        raise ValueError("Please use the long form of your email address (with your name).")
     return email
 
 
@@ -67,7 +67,7 @@ def main(argv: List[str]) -> None:
 
     app = aiohttp.web.Application()
     app["db"] = cig.db.Database()
-    app["secret"] = "TODO"
+    app["secret"] = config.get("server", "secret")
     app.add_routes(routes)
     try:
         aiohttp.web.run_app(app, host=bind, port=port)
