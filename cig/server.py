@@ -65,20 +65,22 @@ def lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
 
 
 @routes.post("/{lecture}")
-async def login(req: aiohttp.web.Request) -> aiohttp.web.Response:
+async def lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
     lecture = get_lecture(req)
+    email = get_verified_email(req)
     form = await req.post()
 
-    try:
-        email = normalize_email(form["email"])
-    except KeyError:
-        raise aiohttp.web.HTTPBadRequest(reason="email required")
-    except ValueError as err:
-        return aiohttp.web.Response(text=cig.view.login(lecture=lecture, error=str(err)).render(), content_type="text/html")
+    if not email:
+        try:
+            email = normalize_email(form["email"])
+        except KeyError:
+            raise aiohttp.web.HTTPBadRequest(reason="email required")
+        except ValueError as err:
+            return aiohttp.web.Response(text=cig.view.login(lecture=lecture, error=str(err)).render(), content_type="text/html")
 
-    token = hmac_email(req.app["secret"], email)
-    print(req.app["base_url"].rstrip("/") + cig.templating.url(req.match_info["lecture"], email=email, hmac=token))
-    return aiohttp.web.Response(text=cig.view.link_sent().render(), content_type="text/html")
+        token = hmac_email(req.app["secret"], email)
+        print(req.app["base_url"].rstrip("/") + cig.templating.url(req.match_info["lecture"], email=email, hmac=token))
+        return aiohttp.web.Response(text=cig.view.link_sent(lecture=lecture).render(), content_type="text/html")
 
 
 def main(argv: List[str]) -> None:

@@ -6,13 +6,13 @@ from cig.data import Lecture
 from cig.templating import h, html, raw, url
 
 
-def layout(title: str, body: List[h]) -> h:
+def layout(title: Optional[str], body: List[h]) -> h:
     return html(lang="de")(
         raw("<!-- https://github.com/niklasf/cig-lectures -->"),
         h("head")(
             h("meta", charset="utf-8"),
             h("meta", name="viewport", content="width=device-width,initial-scale=1"),
-            h("title")("CIG Lectures: ", title),
+            h("title")("CIG Lectures WS2020", f": {title}" if title else None),
             h("link", rel="shortcut icon", href="/static/tuc/favicon.ico"),
         ),
         h("body")(
@@ -23,7 +23,7 @@ def layout(title: str, body: List[h]) -> h:
 
 
 def index() -> h:
-    return layout("CIG Lectures WS2020", [
+    return layout(None, [
         h("h1")("CIG Lectures WS2020"),
         h("ul")([
             h("li")(
@@ -34,7 +34,7 @@ def index() -> h:
 
 
 def login(*, lecture: Lecture, error: Optional[str] = None) -> h:
-    return layout("Login", [
+    return layout(lecture.title, [
         h("h1")(f"Register for the next ", h("em")(lecture.title), " lecture (step 1/3)"),
         h("form", method="POST")(
             error and h("p")(error),
@@ -44,8 +44,8 @@ def login(*, lecture: Lecture, error: Optional[str] = None) -> h:
     ])
 
 
-def link_sent() -> h:
-    return layout("Link sent", [
+def link_sent(*, lecture: Lecture) -> h:
+    return layout(lecture.title, [
         h("h1")("Link sent (step 2/3)"),
         h("p")("Check your inbox.")
     ])
