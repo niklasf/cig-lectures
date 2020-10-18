@@ -12,7 +12,7 @@ from cig.data import Event
 
 class Database:
     def __init__(self):
-        self.conn = sqlite3.connect(os.path.join(os.path.dirname(__file__), "..", "todo.db"))
+        self.conn = sqlite3.connect(os.path.join(os.path.dirname(__file__), "..", "database.db"))
 
         with self.conn, open(os.path.join(os.path.dirname(__file__), "..", "schema.sql")) as schema:
             self.conn.executescript(schema.read())
