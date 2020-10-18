@@ -101,9 +101,10 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                     ])
                 ) if admin or registrations.has(email) else None,
                 h("form", method="POST")(
+                    h("input", type="text", name="name", placeholder=email) if admin else None,
                     h("input", type="hidden", name="reserve", value=registrations.event.id),
-                    h("button", type="submit")("Reserve seat")
-                ) if not registrations.has(email) else None,
+                    h("button", type="submit")("Reserve seat (admin)" if admin else "Reserve seat")
+                ) if admin or not registrations.has(email) else None,
             ) for registrations in events
         ]
     ])

@@ -17,10 +17,10 @@ class Database:
         with self.conn, open(os.path.join(os.path.dirname(__file__), "..", "schema.sql")) as schema:
             self.conn.executescript(schema.read())
 
-    def maybe_register(self, *, event: int, name: str) -> None:
+    def maybe_register(self, *, event: int, name: str, admin: bool = False) -> None:
         with self.conn:
             try:
-                self.conn.execute("INSERT INTO registrations (event, name, time, admin, deleted) VALUES (?, ?, ?, FALSE, FALSE)", (event, name, datetime.datetime.now().isoformat(sep=" ")))
+                self.conn.execute("INSERT INTO registrations (event, name, time, admin, deleted) VALUES (?, ?, ?, ?, FALSE)", (event, name, datetime.datetime.now().isoformat(sep=" "), admin))
             except sqlite3.IntegrityError:
                 pass
 
