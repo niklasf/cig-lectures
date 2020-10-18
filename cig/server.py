@@ -11,6 +11,7 @@ import cig.db
 import cig.view
 import cig.templating
 
+from cig.data import Lecture
 from typing import List
 
 
@@ -19,7 +20,7 @@ def normalize_email(email: str) -> str:
     if not all(c.isalnum() or c in "@-." for c in email) or email.count("@") != 1:
         raise ValueError("Invalid email address.")
     if not email.endswith("@tu-clausthal.de"):
-        raise ValueError("Please use your address (@tu-clausthal.de).")
+        raise ValueError("Please use your university email address (@tu-clausthal.de).")
     if any(c.isdigit() for c in email):
         raise ValueError("Please use the long form of your email address (with your name).")
     return email
@@ -37,13 +38,22 @@ def index(_req: aiohttp.web.Request) -> aiohttp.web.Response:
     return aiohttp.web.Response(text=cig.view.index().render(), content_type="text/html")
 
 
+def get_lecture(req: aiohttp.web.Request) -> Lecture:
+    try:
+        return cig.data.LECTURES[req.match_info["lecture"]]
+    except KeyError:
+        raise aiohttp.web.HTTPNotFound(reason="lecture not found")
+
+
 @routes.get("/{lecture}")
 def login(req: aiohttp.web.Request) -> aiohttp.web.Response:
-    return aiohttp.web.Response(text=cig.view.login().render(), content_type="text/html")
+    lecture = get_lecture(req)
+    return aiohttp.web.Response(text=cig.view.login(lecture=lecture).render(), content_type="text/html")
 
 
 @routes.post("/{lecture}")
 async def login(req: aiohttp.web.Request) -> aiohttp.web.Response:
+    lecture = get_lecture(req)
     form = await req.post()
 
     try:
@@ -51,7 +61,7 @@ async def login(req: aiohttp.web.Request) -> aiohttp.web.Response:
     except KeyError:
         raise aiohttp.web.HTTPBadRequest(reason="email required")
     except ValueError as err:
-        return aiohttp.web.Response(text=cig.view.login(error=str(err)).render(), content_type="text/html")
+        return aiohttp.web.Response(text=cig.view.login(lecture=lecture, error=str(err)).render(), content_type="text/html")
 
     token = hmac_email(req.app["secret"], email)
     print(req.app["base_url"].rstrip("/") + cig.templating.url(req.match_info["lecture"], email=email, hmac=token))

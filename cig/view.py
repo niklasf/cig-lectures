@@ -1,6 +1,8 @@
 from typing import List, Optional
 
 import cig.data
+
+from cig.data import Lecture
 from cig.templating import h, html, raw, url
 
 
@@ -31,9 +33,9 @@ def index() -> h:
     ])
 
 
-def login(*, error: Optional[str] = None) -> h:
+def login(*, lecture: Lecture, error: Optional[str] = None) -> h:
     return layout("Login", [
-        h("h1")("Step 1/3: Login"),
+        h("h1")(f"Register for the next ", h("em")(lecture.title), " lecture (step 1/3)"),
         h("form", method="POST")(
             error and h("p")(error),
             h("input", type="email", placeholder="max.mustermann@tu-clausthal.de", name="email", required=True),
