@@ -11,3 +11,9 @@ cp config.default.ini config.ini # And adjust settings
 pipenv install
 pipenv run server
 ```
+
+Todo
+----
+
+* [ ] Email verification
+* [ ] Type checking

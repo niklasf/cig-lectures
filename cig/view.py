@@ -64,6 +64,14 @@ def link_sent(*, lecture: Lecture) -> h:
 
 
 def register(*, lecture: Lecture, email: str, events: List[Registrations], admin: bool = False) -> h:
+    def modifier(row):
+        if row.deleted:
+            return h("del")
+        elif row.admin:
+            return h("ins")
+        else:
+            return h("span")
+
     return layout(lecture.title, [
         h("h1", klass="no-print")("Register for the next ", h("em")(lecture.title), " lecture (step 3/3)"),
         h("section", klass="no-print")(
@@ -93,8 +101,8 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                             "me": row.name == email,
                             "overhang": row.n is None or row.n > registrations.event.seats,
                         })(
-                            h("td")(row.n),
-                            h("td")(row.name),
+                            h("td")(modifier(row)(row.n)),
+                            h("td")(modifier(row)(row.name)),
                             h("td")(
                                 "Deleted by admin" if row.deleted else row.time.strftime("Successfully registered %d.%m. %H:%m" if row.n is not None and row.n <= registrations.event.seats else "No seat is available (%d.%m. %H:%m). We will make sure to provide the lecture materials online.")
                             ),
