@@ -21,6 +21,10 @@ def layout(title: Optional[str], body: List[h]) -> h:
             h("main")(
                 h("img", src="/static/tuc/logo.svg", klass="no-print"),
                 body
+            ),
+            h("footer", klass="no-print")(
+                "This program is free/libre open source software. ",
+                h("a", href="https://github.com/niklasf/cig-lectures")("GitHub"), "."
             )
         )
     )
