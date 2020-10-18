@@ -1,11 +1,16 @@
 # (c) 2020 Niklas Fiekas <niklas.fiekas@tu-clausthal.de>
 
+import os.path
+import configparser
+import logging
 import hmac
 
 import aiohttp.web
 
 import cig.db
 import cig.view
+
+from typing import List
 
 
 def normalize_email(email: str) -> str:
@@ -48,12 +53,23 @@ async def login(req: aiohttp.web.Request) -> aiohttp.web.Response:
     return aiohttp.web.Response(text=cig.view.link_sent().render(), content_type="text/html")
 
 
-def main() -> None:
+def main(argv: List[str]) -> None:
+    logging.basicConfig(level=logging.DEBUG)
+
+    config = configparser.ConfigParser()
+    config.read([
+        os.path.join(os.path.dirname(__file__), "..", "config.default.ini"),
+        os.path.join(os.path.dirname(__file__), "..", "config.ini"),
+    ] + argv)
+
+    bind = config.get("server", "bind")
+    bind = config.get("server", "port")
+
     app = aiohttp.web.Application()
     app["db"] = cig.db.Database()
     app["secret"] = "TODO"
     app.add_routes(routes)
     try:
-        aiohttp.web.run_app(app)
+        aiohttp.web.run_app(app, host=bind, port=port)
     finally:
         app["db"].close()
