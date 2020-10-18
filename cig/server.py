@@ -32,11 +32,16 @@ routes = aiohttp.web.RouteTableDef()
 
 
 @routes.get("/")
+def index(_req: aiohttp.web.Request) -> aiohttp.web.Response:
+    return aiohttp.web.Response(text=cig.view.index().render(), content_type="text/html")
+
+
+@routes.get("/{lecture}")
 def login(req: aiohttp.web.Request) -> aiohttp.web.Response:
     return aiohttp.web.Response(text=cig.view.login().render(), content_type="text/html")
 
 
-@routes.post("/")
+@routes.post("/{lecture}")
 async def login(req: aiohttp.web.Request) -> aiohttp.web.Response:
     form = await req.post()
 

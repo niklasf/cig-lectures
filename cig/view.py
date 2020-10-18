@@ -1,6 +1,7 @@
 from typing import List, Optional
 
-from cig.templating import h, html, raw
+import cig.data
+from cig.templating import h, html, raw, url
 
 
 def layout(title: str, body: List[h]) -> h:
@@ -17,6 +18,17 @@ def layout(title: str, body: List[h]) -> h:
             body
         )
     )
+
+
+def index() -> h:
+    return layout("CIG Lectures WS2020", [
+        h("h1")("CIG Lectures WS2020"),
+        h("ul")([
+            h("li")(
+                h("a", href=url(name))(lecture.title)
+            ) for name, lecture in cig.data.LECTURES.items()
+        ])
+    ])
 
 
 def login(*, error: Optional[str] = None) -> h:
