@@ -22,20 +22,23 @@ LECTURES = {
     lecture.id: lecture for lecture in [
         Lecture("complexity", "Complexity Theory"),
         Lecture("informatics", "Informatics III"),
+        Lecture("example", "Example Course (with daily events)"),
     ]
 }
 
 
 EVENTS = {
     event.id: event for event in [
-        Event(1, "complexity", datetime.date(2020, 10, 14), "Complexity Lecture 1", "Hörsaal T1", 10),
-        Event(2, "complexity", datetime.date(2020, 10, 15), "Complexity Lecture 2", "Hörsaal T1", 0),
-        Event(3, "complexity", datetime.date(2020, 10, 16), "Complexity Lecture 3", "Hörsaal T1", 5),
-        Event(4, "complexity", datetime.date(2020, 10, 17), "Complexity Lecture 4", "Hörsaal T1", 5),
-        Event(5, "complexity", datetime.date(2020, 10, 18), "Complexity Lecture 5", "Hörsaal T1", 5),
-        Event(6, "complexity", datetime.date(2020, 10, 19), "Complexity Lecture 5", "Hörsaal T1", 5),
-        Event(7, "complexity", datetime.date(2020, 10, 20), "Complexity Lecture 5", "Hörsaal T1", 5),
-        Event(8, "complexity", datetime.date(2020, 10, 21), "Complexity Lecture 5", "Hörsaal T1", 5),
+        Event(1, "example", datetime.date(2020, 10, 17), "Example Lecture 1", "Raum ohne Platz", 0),
+        Event(2, "example", datetime.date(2020, 10, 18), "Example Lecture 2", "Raum mit einem Platz", 1),
+        Event(3, "example", datetime.date(2020, 10, 19), "Example Lecture 3", "Raum mit zwei Plätzen", 2),
+        Event(4, "example", datetime.date(2020, 10, 20), "Example Lecture 4", "Raum mit drei Plätzen", 3),
+        Event(5, "example", datetime.date(2020, 10, 21), "Example Lecture 5", "Raum mit drei Plätzen", 3),
+        Event(6, "example", datetime.date(2020, 10, 22), "Example Lecture 6", "Raum mit drei Plätzen", 3),
+        Event(7, "example", datetime.date(2020, 10, 23), "Example Lecture 7", "Raum mit drei Plätzen", 3),
+        Event(8, "example", datetime.date(2020, 10, 24), "Example Lecture 8", "Raum mit drei Plätzen", 3),
+        Event(9, "example", datetime.date(2020, 10, 25), "Example Lecture 9", "Raum mit drei Plätzen", 3),
+        Event(10, "example", datetime.date(2020, 10, 26), "Example Lecture 10", "Raum mit drei Plätzen", 3),
     ]
 }
 

@@ -143,6 +143,6 @@ def main(argv: List[str]) -> None:
     app.add_routes(routes)
     app.router.add_static("/static", os.path.join(os.path.dirname(__file__), "..", "static"))
     try:
-        aiohttp.web.run_app(app, host=bind, port=port)
+        aiohttp.web.run_app(app, host=bind, port=port, access_log=None)
     finally:
         app["db"].close()
