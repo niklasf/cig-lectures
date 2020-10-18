@@ -88,7 +88,7 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
         ),
         h("section")(
             h("h2")("Signup not open, yet"),
-            h("p")("Singup opens on the day of each lecture.")
+            h("p")("Signup opens on the day of each lecture.")
         ) if not events else [
             h("section", klass={
                 "not-today": registrations.event.date != today,
