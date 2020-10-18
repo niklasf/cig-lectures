@@ -40,9 +40,6 @@ class Database:
 
             return Registrations(event, list(map(make_record, self.conn.execute("SELECT id, event, name, time, admin, deleted FROM registrations WHERE event = ? ORDER BY id ASC", (event.id, )))))
 
-    def close(self) -> None:
-        self.conn.close()
-
 
 @dataclasses.dataclass
 class Registration:

@@ -174,10 +174,7 @@ def main(argv: List[str]) -> None:
     app["secret"] = config.get("server", "secret")
     app["mailgun_domain"] = config.get("mailgun", "domain")
     app["mailgun_key"] = config.get("mailgun", "key")
+
     app.add_routes(routes)
     app.router.add_static("/static", os.path.join(os.path.dirname(__file__), "..", "static"))
-
-    try:
-        aiohttp.web.run_app(app, host=bind, port=port, access_log=None)
-    finally:
-        app["db"].close()
+    aiohttp.web.run_app(app, host=bind, port=port, access_log=None)
