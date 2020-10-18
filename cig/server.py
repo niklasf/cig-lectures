@@ -60,6 +60,7 @@ def extract_verified_email(req: aiohttp.web.Request) -> Optional[str]:
 def get_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
     lecture = extract_lecture(req)
     email = extract_verified_email(req)
+    admin = cig.data.admin(email)
     if not email:
         return aiohttp.web.Response(text=cig.view.login(lecture=lecture).render(), content_type="text/html")
     else:
@@ -69,7 +70,7 @@ def get_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
             if event.lecture == lecture.id and event.date == today
         ]
         return aiohttp.web.Response(
-            text=cig.view.register(lecture=lecture, email=email, events=events).render(),
+            text=cig.view.register(lecture=lecture, email=email, events=events, admin=admin).render(),
             content_type="text/html")
 
 
@@ -77,6 +78,7 @@ def get_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
 async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
     lecture = extract_lecture(req)
     email = extract_verified_email(req)
+    admin = cig.data.admin(email)
     form = await req.post()
 
     if not email:
