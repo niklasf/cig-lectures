@@ -20,7 +20,7 @@ def attribute(attr: str) -> str:
 
 
 class h:
-    def __init__(self, /, _name: str, **attrs: Attribute):
+    def __init__(self, _name: str, **attrs: Attribute):
         assert _name.isalnum()
         self.name = _name
 
