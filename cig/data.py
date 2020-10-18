@@ -18,13 +18,14 @@ class Event:
 class Lecture:
     id: str
     title: str
+    lecturer: str
 
 
 LECTURES = {
     lecture.id: lecture for lecture in [
-        Lecture("complexity", "Complexity Theory"),
-        Lecture("informatics", "Informatics III"),
-        Lecture("example", "Example Course (with daily events)"),
+        Lecture("complexity", "Complexity Theory", "Jürgen Dix"),
+        Lecture("informatics", "Informatics III", "Jürgen Dix"),
+        Lecture("example", "Example Course (with daily events)", "Jürgen Dix"),
     ]
 }
 

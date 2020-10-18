@@ -96,15 +96,17 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
 
         if not req.app["dev"]:
             async with aiohttp.ClientSession() as session:
-                print(await session.post(
-                    req.app["mailgun_url"],
+                async with session.post(
+                    f"https://api.mailgun.net/v3/{req.app['mailgun_domain']}/messages",
                     auth=aiohttp.BasicAuth("api", req.app["mailgun_key"]),
-                    json={
-                        "from": "CIG Lectures <noreply@cig-tu-clausthal.de>",
-                        "to": [email],
-                        "subject": f"Register for the next {lecture.title} lecture",
-                        "text": f"Continue here: {magic_link}\n\nYou can also bookmark this link for future lectures."
-                }))
+                    data={
+                        "from": f"CIG Lectures <noreply@{req.app['mailgun_domain']}>",
+                        "to": email,
+                        "subject": f"Register for the next {lecture.title} lecture (step 2/3)",
+                        "text": f"Continue here: {magic_link}\n\nYou can also bookmark this link for future lectures.\n\n---\nAutomated email on behalf of {lecture.lecturer} and team"
+                    }
+                ) as res:
+                    print("Response:", res.status, "-", await res.text())
 
         return aiohttp.web.Response(
             text=cig.view.link_sent(lecture=lecture, magic_link=magic_link if req.app["dev"] else None).render(),
@@ -158,7 +160,7 @@ def main(argv: List[str]) -> None:
     app["db"] = cig.db.Database()
     app["dev"] = config.getboolean("server", "dev")
     app["secret"] = config.get("server", "secret")
-    app["mailgun_url"] = config.get("mailgun", "url")
+    app["mailgun_domain"] = config.get("mailgun", "domain")
     app["mailgun_key"] = config.get("mailgun", "key")
     app.add_routes(routes)
     app.router.add_static("/static", os.path.join(os.path.dirname(__file__), "..", "static"))
