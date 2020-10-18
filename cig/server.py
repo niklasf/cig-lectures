@@ -98,8 +98,10 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
         except (KeyError, ValueError):
             pass
         else:
-            name = form.get("name", email) if admin else email
-            if event.date == datetime.date.today():
+            name = form.get("name", email).strip() if admin else email
+            if "@" in name:
+                name = name.lower()
+            if name and event.date == datetime.date.today():
                 req.app["db"].maybe_register(event=event.id, name=name, admin=admin)
         return get_lecture(req)
 
