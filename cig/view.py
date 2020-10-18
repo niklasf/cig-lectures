@@ -53,8 +53,10 @@ def link_sent(*, lecture: Lecture) -> h:
 
 def register(*, lecture: Lecture, email: str) -> h:
     return layout(lecture.title, [
-        h("h1")("Register for the next ", h("em")(lecture.title, " lecture (step 3/3)")),
+        h("h1")("Register for the next ", h("em")(lecture.title), " lecture (step 3/3)"),
         h("h2")("Your contact information"),
         h("p")("You are logged in as ", h("strong")(email), "."),
-        h("p")("We do not need additional contact information at this time. But please keep your details updated with the Studentensekretariat.")
+        h("p")("We do not need additional contact information at this time. But please keep your details updated with the Studentensekretariat."),
+        h("h2")("Signup not yet open"),
+        h("p")("Singup opens on the day of each lecture.")
     ])
