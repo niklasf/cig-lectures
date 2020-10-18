@@ -43,7 +43,11 @@ def login(*, lecture: Lecture, error: Optional[str] = None) -> h:
         h("section")(
             h("form", method="POST")(
                 error and h("p")(error),
-                h("p")("E-Mail: ", h("input", type="email", placeholder="max.mustermann@tu-clausthal.de", name="email", required=True)),
+                h("p")(
+                    h("label", for_="email")("E-Mail:"),
+                    " ",
+                    h("input", type="email", placeholder="max.mustermann@tu-clausthal.de", id="email", name="email", required=True)
+                ),
                 h("p")(h("button", type="submit")("Send login link"))
             )
         ),

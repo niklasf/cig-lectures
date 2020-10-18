@@ -10,14 +10,21 @@ from typing import Union, Optional, List
 Attribute = Union[str, bool, None, bool, int]
 
 
+def attribute(attr: str) -> str:
+    if attr == "klass":
+        return "class"
+    else:
+        attr = attr.rstrip("_")
+        assert attr.isalnum()
+        return attr
+
+
 class h:
     def __init__(self, /, _name: str, **attrs: Attribute):
         assert _name.isalnum()
         self.name = _name
 
-        assert all(attr.isalnum() for attr in attrs)
-        self.attrs = attrs
-
+        self.attrs = {attribute(attr): value for attr, value in attrs.items()}
         self.children: Optional[List[Union[h, raw]]] = None
 
     def __call__(self, *args: Child) -> h:
@@ -41,7 +48,7 @@ class h:
             if value is False or value is None:
                 continue
             builder.append(" ")
-            builder.append("class" if attr == "klass" else attr)
+            builder.append(attr)
             if value is True:
                 continue
             if isinstance(value, list):
