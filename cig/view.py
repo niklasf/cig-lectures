@@ -69,7 +69,7 @@ def link_sent(*, lecture: Lecture, magic_link: Optional[str]) -> h:
             h("p")(
                 "Development mode enabled. This link would have been sent: ",
                 h("code")(h("a", href=magic_link)(magic_link))
-            )
+            ) if magic_link else None
         )
     ])
 

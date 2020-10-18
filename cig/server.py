@@ -7,6 +7,7 @@ import datetime
 import logging
 import hmac
 
+import aiohttp
 import aiohttp.web
 
 import cig.db
@@ -92,6 +93,19 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
         token = hmac_email(req.app["secret"], email)
         magic_link = req.app["base_url"].rstrip("/") + cig.templating.url(req.match_info["lecture"], email=email, hmac=token)
         print(magic_link)
+
+        if not req.app["dev"]:
+            async with aiohttp.ClientSession() as session:
+                print(await session.post(
+                    req.app["mailgun_url"],
+                    auth=aiohttp.BasicAuth("api", req.app["mailgun_key"]),
+                    json={
+                        "from": "CIG Lectures <noreply@cig-tu-clausthal.de>",
+                        "to": [email],
+                        "subject": f"Register for the next {lecture.title} lecture",
+                        "text": f"Continue here: {magic_link}\n\nYou can also bookmark this link for future lectures."
+                }))
+
         return aiohttp.web.Response(
             text=cig.view.link_sent(lecture=lecture, magic_link=magic_link if req.app["dev"] else None).render(),
             content_type="text/html")
@@ -144,6 +158,8 @@ def main(argv: List[str]) -> None:
     app["db"] = cig.db.Database()
     app["dev"] = config.getboolean("server", "dev")
     app["secret"] = config.get("server", "secret")
+    app["mailgun_url"] = config.get("mailgun", "url")
+    app["mailgun_key"] = config.get("mailgun", "key")
     app.add_routes(routes)
     app.router.add_static("/static", os.path.join(os.path.dirname(__file__), "..", "static"))
     try:
