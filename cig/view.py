@@ -53,7 +53,7 @@ def link_sent(*, lecture: Lecture) -> h:
     ])
 
 
-def register(*, lecture: Lecture, email: str, events: List[Registrations]) -> h:
+def register(*, lecture: Lecture, email: str, events: List[Registrations], admin: bool = False) -> h:
     return layout(lecture.title, [
         h("h1")("Register for the next ", h("em")(lecture.title), " lecture (step 3/3)"),
         h("h2")("Your contact information"),
@@ -73,7 +73,8 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations]) -> h:
                     h("thead")(
                         h("tr")(
                             h("th")("#"),
-                            h("th")("Name")
+                            h("th")("Name"),
+                            h("th")("Registered")
                         )
                     ),
                     h("tbody")([
@@ -82,14 +83,17 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations]) -> h:
                             "overhang": row.n > registrations.event.seats,
                         })(
                             h("td")(row.n),
-                            h("td")(row.name)
-                        ) for row in registrations.rows()
+                            h("td")(row.name),
+                            h("td")(
+                                row.time.strftime("Successfully registered %d.%m %H:%m") if row.n <= registrations.event.seats else "No seat was available. We will make sure to provide the lecture materials online."
+                            )
+                        ) for row in registrations.rows() if row.name == email or admin
                     ])
-                ),
+                ) if admin or registrations.has(email) else None,
                 h("form", method="POST")(
                     h("input", type="hidden", name="reserve", value=registrations.event.id),
                     h("button", type="submit")("Reserve seat")
-                )
+                ) if not registrations.has(email) else None,
             ) for registrations in events
         ]
     ])

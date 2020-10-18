@@ -50,6 +50,7 @@ class Registration:
 class Row:
     n: Optional[int]
     name: str
+    time: datetime.datetime
     deleted: bool
 
 
@@ -62,7 +63,10 @@ class Registrations:
         n = 1
         for registration in self.registrations:
             if registration.deleted:
-                yield Row(None, registration.name, True)
+                yield Row(None, registration.name, registration.time, True)
             else:
-                yield Row(n, registration.name, False)
+                yield Row(n, registration.name, registration.time, False)
             n += 1
+
+    def has(self, email: str) -> bool:
+        return any(row.name == email for row in self.rows())
