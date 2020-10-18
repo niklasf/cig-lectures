@@ -72,9 +72,9 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                 h("table")(
                     h("thead")(
                         h("tr")(
-                            h("th")("#"),
+                            h("th")("Seat"),
                             h("th")("Name"),
-                            h("th")("Registered")
+                            h("th")("Status")
                         )
                     ),
                     h("tbody")([
