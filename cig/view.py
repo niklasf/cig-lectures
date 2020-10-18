@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from cig.templating import h, html, raw
 
@@ -15,11 +15,12 @@ def layout(title: str, body: List[h]) -> h:
     )
 
 
-def login() -> h:
+def login(*, error: Optional[str] = None) -> h:
     return layout("Login", [
         h("h1")("Step 1/3: Login"),
         h("form", method="POST")(
-            h("input", type="email", placeholder="max.mustermann@tu-clausthal.de", required=True),
+            error and h("p")(error),
+            h("input", type="email", placeholder="max.mustermann@tu-clausthal.de", name="email", required=True),
             h("button", type="submit")("Send login link")
         ),
     ])
