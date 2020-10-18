@@ -8,7 +8,7 @@ import cig.db
 import cig.view
 
 
-def normalize_email(email):
+def normalize_email(email: str) -> str:
     email = email.strip().lower()
     if not all(c.isalnum() or c in "@-." for c in email) or email.count("@") != 1:
         raise ValueError("Invalid email address")
@@ -19,14 +19,16 @@ def normalize_email(email):
     return email
 
 
+def hmac_email(secret: str, email: str) -> str:
+    return hmac.new(secret.encode("utf-8"), f"mailto:{email}".encode("utf-8"), "sha256").hexdigest()
+
+
 routes = aiohttp.web.RouteTableDef()
 
 
 @routes.get("/")
 def login(req: aiohttp.web.Request) -> aiohttp.web.Response:
-    return aiohttp.web.Response(
-        text=cig.view.login().render(),
-        content_type="text/html")
+    return aiohttp.web.Response(text=cig.view.login().render(), content_type="text/html")
 
 
 @routes.post("/")
@@ -40,9 +42,10 @@ async def login(req: aiohttp.web.Request) -> aiohttp.web.Response:
     except ValueError as err:
         return aiohttp.web.Response(text=cig.view.login(error=str(err)).render(), content_type="text/html")
 
-    return aiohttp.web.Response(
-        text=cig.view.link_sent().render(),
-        content_type="text/html")
+    token = hmac_email(req.app["secret"], email)
+    print("token:", token)
+
+    return aiohttp.web.Response(text=cig.view.link_sent().render(), content_type="text/html")
 
 
 def main() -> None:
