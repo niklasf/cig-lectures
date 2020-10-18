@@ -91,7 +91,9 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
             h("section", klass={
                 "not-today": registrations.event.date != today,
             })(
-                h("h2")(registrations.event.title, " (", registrations.event.date.strftime("%a, %d.%m."), ")"),
+                h("h2", id=f"event-{registrations.event.id}")(
+                    registrations.event.title, " (", registrations.event.date.strftime("%a, %d.%m."), ")"
+                ),
                 h("p")("Please reserve a seat only if you will physically attend this lecture in ", h("strong")(registrations.event.location), "."),
                 h("p")("Please come only after you successfully reserved a seat. There are ", h("strong")(f"{registrations.event.seats} seats"), " in total."),
                 h("table")(
