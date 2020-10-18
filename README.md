@@ -12,8 +12,7 @@ pipenv install
 pipenv run server
 ```
 
-Todo
-----
+License
+-------
 
-* [ ] Email verification
-* [ ] Type checking
+See COPYING.md.

@@ -11,11 +11,11 @@ main, footer {
   margin: auto;
 }
 
-footer, footer a {
-  color: #aaa;
-}
 footer {
   margin-top: 3em;
+}
+footer, footer a {
+  color: #808080;
 }
 
 img { /* logo */
@@ -24,17 +24,17 @@ img { /* logo */
 }
 
 section {
-  border: 1px solid #aaa;
+  border: 1px solid #808080;
   padding: 1em;
   margin: 2em 0;
 }
 
 section.not-today {
-  border: 1px dashed #aaa;
+  border: 1px dashed #E6E6E6;
 }
 
 p.error {
-  background: red;
+  background: #8C1C00;
   color: white;
   padding: 1em;
 }
@@ -46,17 +46,17 @@ table {
 }
 
 tr.me {
-  background: green;
+  background: #008C4F;
   color: white;
 }
 
 tr.overhang {
-  background: red;
+  background: #8C1C00;
   color: white;
 }
 
 th, td {
-  border: 1px solid #aaa;
+  border: 1px solid #808080;
   padding: 0.5em;
 }
 
