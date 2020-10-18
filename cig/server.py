@@ -11,13 +11,13 @@ import cig.db
 import cig.view
 import cig.templating
 
+from typing import List, Optional
 from cig.data import Lecture
-from typing import List
 
 
 def normalize_email(email: str) -> str:
     email = email.strip().lower()
-    if not all(c.isalnum() or c in "@-." for c in email) or email.count("@") != 1:
+    if not all(c.isalnum() or c in "@-." for c in email) or email.count("@") != 1 or email.startswith("@"):
         raise ValueError("Invalid email address.")
     if not email.endswith("@tu-clausthal.de"):
         raise ValueError("Please use your university email address (@tu-clausthal.de).")
@@ -45,10 +45,23 @@ def get_lecture(req: aiohttp.web.Request) -> Lecture:
         raise aiohttp.web.HTTPNotFound(reason="lecture not found")
 
 
+def get_verified_email(req: aiohttp.web.Request) -> Optional[str]:
+    email = req.query.get("email", "")
+    token = req.query.get("hmac", "")
+    if hmac.compare_digest(hmac_email(req.app["secret"], email), token):
+        return email
+    else:
+        return None
+
+
 @routes.get("/{lecture}")
-def login(req: aiohttp.web.Request) -> aiohttp.web.Response:
+def lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
     lecture = get_lecture(req)
-    return aiohttp.web.Response(text=cig.view.login(lecture=lecture).render(), content_type="text/html")
+    email = get_verified_email(req)
+    if not email:
+        return aiohttp.web.Response(text=cig.view.login(lecture=lecture).render(), content_type="text/html")
+    else:
+        return aiohttp.web.Response(text=email, content_type="text/html")
 
 
 @routes.post("/{lecture}")
