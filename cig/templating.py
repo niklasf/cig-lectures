@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from urllib.parse import quote as urlquote
 from html import escape
-from typing import Union, Optional, List
+from typing import Union, Optional, List, Dict
 
 
-Attribute = Union[str, bool, None, bool, int]
+Attribute = Union[str, bool, None, bool, int, Dict[str, bool]]
 
 
 def attribute(attr: str) -> str:

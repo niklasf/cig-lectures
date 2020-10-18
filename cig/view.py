@@ -4,13 +4,13 @@ import datetime
 
 import cig.data
 
-from cig.db import Registrations
+from cig.db import Registrations, Row
 from cig.data import Lecture, Event
 from cig.templating import h, html, raw, url
-from typing import List, Optional
+from typing import List, Optional, Union, Callable
 
 
-def layout(title: Optional[str], body: List[h]) -> h:
+def layout(title: Optional[str], body: h) -> h:
     return html(lang="de")(
         raw("<!-- https://github.com/niklasf/cig-lectures -->"),
         h("head")(
@@ -21,10 +21,10 @@ def layout(title: Optional[str], body: List[h]) -> h:
             h("link", rel="shortcut icon", href="/static/tuc/favicon.ico")
         ),
         h("body")(
-            h("main")(
+            h("header")(
                 h("img", src="/static/tuc/logo.svg", klass="no-print"),
-                body
             ),
+            body,
             h("footer", klass="no-print")(
                 "This program is free/libre open source software. ",
                 h("a", href="https://github.com/niklasf/cig-lectures")("GitHub"), "."
@@ -34,18 +34,18 @@ def layout(title: Optional[str], body: List[h]) -> h:
 
 
 def index() -> h:
-    return layout(None, [
+    return layout(None, h("main")(
         h("h1")("CIG Lectures WS2020"),
         h("ul")([
             h("li")(
                 h("a", href=url(name))(lecture.title)
             ) for name, lecture in cig.data.LECTURES.items()
         ])
-    ])
+    ))
 
 
 def login(*, lecture: Lecture, error: Optional[str] = None) -> h:
-    return layout(lecture.title, [
+    return layout(lecture.title, h("main")(
         h("h1")(f"Register for the next ", h("em")(lecture.title), " lecture (step 1/3)"),
         h("section")(
             h("form", method="POST")(
@@ -57,12 +57,12 @@ def login(*, lecture: Lecture, error: Optional[str] = None) -> h:
                 ),
                 h("p")(h("button", type="submit")("Send login link"))
             )
-        ),
-    ])
+        )
+    ))
 
 
 def link_sent(*, lecture: Lecture, magic_link: Optional[str]) -> h:
-    return layout(lecture.title, [
+    return layout(lecture.title, h("main")(
         h("h1")("Link sent (step 2/3)"),
         h("section")(
             h("p")("Check your inbox."),
@@ -71,11 +71,11 @@ def link_sent(*, lecture: Lecture, magic_link: Optional[str]) -> h:
                 h("code")(h("a", href=magic_link)(magic_link))
             ) if magic_link else None
         )
-    ])
+    ))
 
 
 def register(*, lecture: Lecture, email: str, events: List[Registrations], admin: bool = False, today: datetime.date) -> h:
-    def modifier(row):
+    def modifier(row: Row) -> Callable[[str], h]:
         if row.deleted and row.admin:
             return lambda *children: h("del")(h("ins")(*children))
         elif row.deleted:
@@ -85,7 +85,7 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
         else:
             return h("span")
 
-    return layout(lecture.title, [
+    return layout(lecture.title, h("main")(
         h("h1", klass="no-print")("Register for the next ", h("em")(lecture.title), " lecture (step 3/3)"),
         h("section", klass="no-print")(
             h("h2")("Your contact information"),
@@ -118,7 +118,7 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                             "me": row.name == email,
                             "overhang": row.n is not None and row.n > registrations.event.seats,
                         })(
-                            h("td")(modifier(row)(row.n)),
+                            h("td")(modifier(row)(f"#{row.n}")),
                             h("td")(modifier(row)(row.name)),
                             h("td")(
                                 "Deleted by admin" if row.deleted else row.time.strftime("Successfully registered %d.%m. %H:%m" if row.n is not None and row.n <= registrations.event.seats else "No seat is available (%d.%m. %H:%m). We will make sure to provide the lecture materials online.")
@@ -140,4 +140,4 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                 ) if admin or not registrations.has(email) else None,
             ) for registrations in events
         ]
-    ])
+    ))

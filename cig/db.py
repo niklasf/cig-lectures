@@ -7,11 +7,12 @@ import datetime
 import sqlite3
 import dataclasses
 
+from typing import Tuple, Optional, List, Iterator
 from cig.data import Event
 
 
 class Database:
-    def __init__(self):
+    def __init__(self) -> None:
         self.conn = sqlite3.connect(os.path.join(os.path.dirname(__file__), "..", "database.db"))
 
         with self.conn, open(os.path.join(os.path.dirname(__file__), "..", "schema.sql")) as schema:
@@ -68,7 +69,7 @@ class Registrations:
         self.event = event
         self.registrations = registrations
 
-    def rows(self):
+    def rows(self) -> Iterator[Row]:
         n = 1
         for registration in self.registrations:
             if registration.deleted:

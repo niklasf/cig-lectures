@@ -55,6 +55,5 @@ EVENTS = {
 }
 
 
-def admin(email):
-    return False # TODO
-    return email in (f"{prefix}@tu-clausthal.de" for prefix in ["dix", "niklas.fiekas", "tobias.ahlbrecht"])
+def admin(email: str) -> bool:
+    return False and email in (f"{prefix}@tu-clausthal.de" for prefix in ["dix", "niklas.fiekas", "tobias.ahlbrecht"]) # TODO

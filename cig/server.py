@@ -37,7 +37,7 @@ routes = aiohttp.web.RouteTableDef()
 
 
 @routes.get("/")
-def index(_req: aiohttp.web.Request) -> aiohttp.web.Response:
+async def index(_req: aiohttp.web.Request) -> aiohttp.web.Response:
     return aiohttp.web.Response(text=cig.view.index().render(), content_type="text/html")
 
 
@@ -49,7 +49,7 @@ def extract_lecture(req: aiohttp.web.Request) -> Lecture:
 
 
 def extract_verified_email(req: aiohttp.web.Request) -> Optional[str]:
-    email = req.query.get("email", "")
+    email: str = req.query.get("email", "")
     token = req.query.get("hmac", "")
     if hmac.compare_digest(hmac_email(req.app["secret"], email), token):
         return email
@@ -58,10 +58,10 @@ def extract_verified_email(req: aiohttp.web.Request) -> Optional[str]:
 
 
 @routes.get("/{lecture}")
-def get_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
+async def get_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
     lecture = extract_lecture(req)
     email = extract_verified_email(req)
-    admin = cig.data.admin(email)
+    admin = email is not None and cig.data.admin(email)
     if not email:
         return aiohttp.web.Response(text=cig.view.login(lecture=lecture).render(), content_type="text/html")
     else:
@@ -76,15 +76,15 @@ def get_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
 
 
 @routes.post("/{lecture}")
-async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
+async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
     lecture = extract_lecture(req)
     email = extract_verified_email(req)
-    admin = cig.data.admin(email)
+    admin = email is not None and cig.data.admin(email)
     form = await req.post()
 
     if not email:
         try:
-            email = normalize_email(form["email"])
+            email = normalize_email(str(form["email"]))
         except KeyError:
             raise aiohttp.web.HTTPBadRequest(reason="email required")
         except ValueError as err:
@@ -113,11 +113,11 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
             content_type="text/html")
     else:
         try:
-            event = cig.data.EVENTS[int(form["reserve"])]
+            event = cig.data.EVENTS[int(str(form["reserve"]))]
         except (KeyError, ValueError):
             pass
         else:
-            name = form.get("name", email).strip() if admin else email
+            name = str(form.get("name", email)).strip() if admin else email
             if "@" in name:
                 name = name.lower()
             if name and (admin or event.date == datetime.date.today()):
@@ -125,22 +125,22 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
 
         if admin:
             try:
-                event = int(form["delete"])
-                name = form["name"]
+                delete = int(str(form["delete"]))
+                name = str(form["name"])
             except (KeyError, ValueError):
                 pass
             else:
-                req.app["db"].delete(event=event, name=name)
+                req.app["db"].delete(event=delete, name=name)
 
             try:
-                event = int(form["restore"])
-                name = form["name"]
+                restore = int(str(form["restore"]))
+                name = str(form["name"])
             except (KeyError, ValueError):
                 pass
             else:
-                req.app["db"].restore(event=event, name=name)
+                req.app["db"].restore(event=restore, name=name)
 
-        return get_lecture(req)
+        return await get_lecture(req)
 
 
 def main(argv: List[str]) -> None:
@@ -164,6 +164,7 @@ def main(argv: List[str]) -> None:
     app["mailgun_key"] = config.get("mailgun", "key")
     app.add_routes(routes)
     app.router.add_static("/static", os.path.join(os.path.dirname(__file__), "..", "static"))
+
     try:
         aiohttp.web.run_app(app, host=bind, port=port, access_log=None)
     finally:
