@@ -46,6 +46,6 @@ def login(*, lecture: Lecture, error: Optional[str] = None) -> h:
 
 def link_sent() -> h:
     return layout("Link sent", [
-        h("h1")("Step 2/3: Link sent"),
+        h("h1")("Link sent (step 2/3)"),
         h("p")("Check your inbox.")
     ])
