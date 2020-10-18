@@ -84,19 +84,27 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                         h("tr")(
                             h("th")("Seat"),
                             h("th")("Name"),
-                            h("th")("Status")
+                            h("th")("Status"),
+                            h("th", klass="no-print")("Admin") if admin else None
                         )
                     ),
                     h("tbody")([
                         h("tr", klass={
                             "me": row.name == email,
-                            "overhang": row.n > registrations.event.seats,
+                            "overhang": row.n is None or row.n > registrations.event.seats,
                         })(
                             h("td")(row.n),
                             h("td")(row.name),
                             h("td")(
-                                row.time.strftime("Successfully registered %d.%m. %H:%m" if row.n <= registrations.event.seats else "No seat is available (%d.%m. %H:%m). We will make sure to provide the lecture materials online.")
-                            )
+                                "Deleted by admin" if row.deleted else row.time.strftime("Successfully registered %d.%m. %H:%m" if row.n is not None and row.n <= registrations.event.seats else "No seat is available (%d.%m. %H:%m). We will make sure to provide the lecture materials online.")
+                            ),
+                            h("td", klass="no-print")(
+                                h("form", method="POST")(
+                                    h("input", type="hidden", name="name", value=row.name),
+                                    h("input", type="hidden", name="restore" if row.deleted else "delete", value=registrations.event.id),
+                                    h("button")("Restore" if row.deleted else "Delete")
+                                )
+                            ) if admin else None
                         ) for row in registrations.rows() if row.name == email or admin
                     ])
                 ) if admin or registrations.has(email) else None,

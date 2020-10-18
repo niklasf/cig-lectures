@@ -24,6 +24,14 @@ class Database:
             except sqlite3.IntegrityError:
                 pass
 
+    def restore(self, *, event: int, name: str) -> None:
+        with self.conn:
+            self.conn.execute("UPDATE registrations SET deleted = FALSE WHERE event = ? AND name = ?", (event, name))
+
+    def delete(self, *, event: int, name: str) -> None:
+        with self.conn:
+            self.conn.execute("UPDATE registrations SET deleted = TRUE WHERE event = ? AND name = ?", (event, name))
+
     def registrations(self, *, event: Event) -> Registrations:
         with self.conn:
             def make_record(row: Tuple[int, int, str, str, bool, bool]) -> Registration:
@@ -51,6 +59,7 @@ class Row:
     n: Optional[int]
     name: str
     time: datetime.datetime
+    admin: bool
     deleted: bool
 
 
@@ -63,9 +72,9 @@ class Registrations:
         n = 1
         for registration in self.registrations:
             if registration.deleted:
-                yield Row(None, registration.name, registration.time, True)
+                yield Row(None, registration.name, registration.time, registration.admin, True)
             else:
-                yield Row(n, registration.name, registration.time, False)
+                yield Row(n, registration.name, registration.time, registration.admin, False)
             n += 1
 
     def has(self, email: str) -> bool:

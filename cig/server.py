@@ -101,8 +101,26 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
             name = form.get("name", email).strip() if admin else email
             if "@" in name:
                 name = name.lower()
-            if name and event.date == datetime.date.today():
+            if name and (admin or event.date == datetime.date.today()):
                 req.app["db"].maybe_register(event=event.id, name=name, admin=admin)
+
+        if admin:
+            try:
+                event = int(form["delete"])
+                name = form["name"]
+            except (KeyError, ValueError):
+                pass
+            else:
+                req.app["db"].delete(event=event, name=name)
+
+            try:
+                event = int(form["restore"])
+                name = form["name"]
+            except (KeyError, ValueError):
+                pass
+            else:
+                req.app["db"].restore(event=event, name=name)
+
         return get_lecture(req)
 
 
