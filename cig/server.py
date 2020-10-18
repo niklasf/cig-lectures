@@ -90,8 +90,11 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
             return aiohttp.web.Response(text=cig.view.login(lecture=lecture, error=str(err)).render(), content_type="text/html")
 
         token = hmac_email(req.app["secret"], email)
-        print(req.app["base_url"].rstrip("/") + cig.templating.url(req.match_info["lecture"], email=email, hmac=token))
-        return aiohttp.web.Response(text=cig.view.link_sent(lecture=lecture).render(), content_type="text/html")
+        magic_link = req.app["base_url"].rstrip("/") + cig.templating.url(req.match_info["lecture"], email=email, hmac=token)
+        print(magic_link)
+        return aiohttp.web.Response(
+            text=cig.view.link_sent(lecture=lecture, magic_link=magic_link if req.app["dev"] else None).render(),
+            content_type="text/html")
     else:
         try:
             event = cig.data.EVENTS[int(form["reserve"])]
@@ -134,11 +137,12 @@ def main(argv: List[str]) -> None:
     ] + argv)
 
     bind = config.get("server", "bind")
-    port = config.get("server", "port")
+    port = config.getint("server", "port")
 
     app = aiohttp.web.Application()
     app["base_url"] = config.get("server", "base_url")
     app["db"] = cig.db.Database()
+    app["dev"] = config.getboolean("server", "dev")
     app["secret"] = config.get("server", "secret")
     app.add_routes(routes)
     app.router.add_static("/static", os.path.join(os.path.dirname(__file__), "..", "static"))

@@ -61,11 +61,15 @@ def login(*, lecture: Lecture, error: Optional[str] = None) -> h:
     ])
 
 
-def link_sent(*, lecture: Lecture) -> h:
+def link_sent(*, lecture: Lecture, magic_link: Optional[str]) -> h:
     return layout(lecture.title, [
         h("h1")("Link sent (step 2/3)"),
         h("section")(
-            h("p")("Check your inbox.")
+            h("p")("Check your inbox."),
+            h("p")(
+                "Development mode enabled. This link would have been sent: ",
+                h("code")(h("a", href=magic_link)(magic_link))
+            )
         )
     ])
 
