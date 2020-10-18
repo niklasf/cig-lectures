@@ -97,17 +97,12 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
         magic_link = req.app["base_url"].rstrip("/") + cig.templating.url(req.match_info["lecture"], email=email, hmac=token)
         print(magic_link)
 
-
-        email_text = []
-        email_text.append(f"Continue here: {magic_link}")
-        if cig.data.admin(email):
-            email_text.append("")
-            email_text.append(f"Admin interface: {magic_link}&admin=yes")
-        email_text.append("")
-        email_text.append("You can also bookmark this link for future lectures.")
-        email_text.append("")
-        email_text.append("---")
-        email_text.append(f"Automated email on behalf of {lecture.lecturer} and team")
+        email_text = "\n\n".join(line for line in [
+            f"Continue here: {magic_link}",
+            f"Admin interface: {magic_link}&admin=yes" if cig.data.admin(email) else None,
+            "You can also bookmark this link for future lectures.",
+            f"---\nAutomated email on behalf of {lecture.lecturer} and team",
+        ] if line is not None)
 
         if not req.app["dev"]:
             async with aiohttp.ClientSession() as session:
@@ -118,13 +113,13 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
                         "from": f"CIG Lectures <noreply@{req.app['mailgun_domain']}>",
                         "to": email,
                         "subject": f"Register for the next {lecture.title} lecture (step 2/3)",
-                        "text": "\n".join(email_text),
+                        "text": email_text,
                     }
                 ) as res:
                     print("Response:", res.status, "-", await res.text())
 
         return aiohttp.web.Response(
-            text=cig.view.link_sent(lecture=lecture, email_text="\n".join(email_text) if req.app["dev"] else None).render(),
+            text=cig.view.link_sent(lecture=lecture, email_text=email_text if req.app["dev"] else None).render(),
             content_type="text/html")
     else:
         # Process registration form.
