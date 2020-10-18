@@ -1,3 +1,27 @@
+body {
+  font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+main {
+  max-width: 800px;
+  margin: auto;
+}
+
+img { /* logo */
+  margin-bottom: 1em;
+}
+
+section {
+  border: 1px solid #aaa;
+  padding: 0.5em 1em;
+  margin: 2em 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
 tr.me {
   background: green;
   color: white;
@@ -6,4 +30,9 @@ tr.me {
 tr.overhang {
   background: red;
   color: white;
+}
+
+th, td {
+  border: 1px solid #aaa;
+  padding: 0.5em;
 }
