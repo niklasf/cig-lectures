@@ -8,4 +8,5 @@ class Lecture:
 
 LECTURES = {
     "complexity": Lecture("Complexity Theory"),
+    "informatics": Lecture("Informatics III"),
 }

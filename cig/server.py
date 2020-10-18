@@ -9,6 +9,7 @@ import aiohttp.web
 
 import cig.db
 import cig.view
+import cig.templating
 
 from typing import List
 
@@ -53,8 +54,7 @@ async def login(req: aiohttp.web.Request) -> aiohttp.web.Response:
         return aiohttp.web.Response(text=cig.view.login(error=str(err)).render(), content_type="text/html")
 
     token = hmac_email(req.app["secret"], email)
-    print("token:", token)
-
+    print(req.app["base_url"].rstrip("/") + cig.templating.url(req.match_info["lecture"], email=email, hmac=token))
     return aiohttp.web.Response(text=cig.view.link_sent().render(), content_type="text/html")
 
 
@@ -71,6 +71,7 @@ def main(argv: List[str]) -> None:
     port = config.get("server", "port")
 
     app = aiohttp.web.Application()
+    app["base_url"] = config.get("server", "base_url")
     app["db"] = cig.db.Database()
     app["secret"] = config.get("server", "secret")
     app.add_routes(routes)
