@@ -106,7 +106,7 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                     h("tbody")([
                         h("tr", klass={
                             "me": row.name == email,
-                            "overhang": row.n is None or row.n > registrations.event.seats,
+                            "overhang": row.n is not None and row.n > registrations.event.seats,
                         })(
                             h("td")(modifier(row)(row.n)),
                             h("td")(modifier(row)(row.name)),
