@@ -3,6 +3,7 @@
 import os.path
 import datetime
 import configparser
+import datetime
 import logging
 import hmac
 
@@ -39,14 +40,14 @@ def index(_req: aiohttp.web.Request) -> aiohttp.web.Response:
     return aiohttp.web.Response(text=cig.view.index().render(), content_type="text/html")
 
 
-def get_lecture(req: aiohttp.web.Request) -> Lecture:
+def extract_lecture(req: aiohttp.web.Request) -> Lecture:
     try:
         return cig.data.LECTURES[req.match_info["lecture"]]
     except KeyError:
         raise aiohttp.web.HTTPNotFound(reason="lecture not found")
 
 
-def get_verified_email(req: aiohttp.web.Request) -> Optional[str]:
+def extract_verified_email(req: aiohttp.web.Request) -> Optional[str]:
     email = req.query.get("email", "")
     token = req.query.get("hmac", "")
     if hmac.compare_digest(hmac_email(req.app["secret"], email), token):
@@ -56,9 +57,9 @@ def get_verified_email(req: aiohttp.web.Request) -> Optional[str]:
 
 
 @routes.get("/{lecture}")
-def lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
-    lecture = get_lecture(req)
-    email = get_verified_email(req)
+def get_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
+    lecture = extract_lecture(req)
+    email = extract_verified_email(req)
     if not email:
         return aiohttp.web.Response(text=cig.view.login(lecture=lecture).render(), content_type="text/html")
     else:
@@ -73,9 +74,9 @@ def lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
 
 
 @routes.post("/{lecture}")
-async def lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
-    lecture = get_lecture(req)
-    email = get_verified_email(req)
+async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
+    lecture = extract_lecture(req)
+    email = extract_verified_email(req)
     form = await req.post()
 
     if not email:
@@ -90,7 +91,14 @@ async def lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
         print(req.app["base_url"].rstrip("/") + cig.templating.url(req.match_info["lecture"], email=email, hmac=token))
         return aiohttp.web.Response(text=cig.view.link_sent(lecture=lecture).render(), content_type="text/html")
     else:
-        raise NotImplemented
+        try:
+            event = cig.data.EVENTS[int(form["reserve"])]
+        except (KeyError, ValueError):
+            pass
+        else:
+            if event.date == datetime.date.today():
+                req.app["db"].maybe_register(event=event.id, name=email)
+        return get_lecture(req)
 
 
 def main(argv: List[str]) -> None:
