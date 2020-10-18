@@ -1,8 +1,13 @@
 # (c) 2020 Niklas Fiekas <niklas.fiekas@tu-clausthal.de>
 
+from __future__ import annotations
+
 import os.path
 import datetime
 import sqlite3
+import dataclasses
+
+from cig.data import Event
 
 
 class Database:
@@ -19,5 +24,29 @@ class Database:
             except sqlite3.IntegrityError:
                 pass
 
+    def registrations(self, *, event: Event) -> Registrations:
+        with self.conn:
+            def make_record(row: Tuple[int, int, str, str, bool, bool]) -> Registration:
+                return Registration(row[0], row[1], row[2], datetime.datetime.fromisoformat(row[3]), row[4], row[5])
+
+            return Registrations(event, list(map(make_record, self.conn.execute("SELECT id, event, name, time, admin, deleted FROM registrations WHERE event = ? ORDER BY id ASC", (event.id, )))))
+
+
     def close(self) -> None:
         self.conn.close()
+
+
+@dataclasses.dataclass
+class Registration:
+    id: int
+    event: int
+    name: str
+    time: datetime.datetime
+    admin: bool
+    deleted: bool
+
+
+class Registrations:
+    def __init__(self, event, registrations):
+        self.event = event
+        self.registrations = registrations

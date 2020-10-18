@@ -2,6 +2,7 @@ from typing import List, Optional
 
 import cig.data
 
+from cig.db import Registrations
 from cig.data import Lecture, Event
 from cig.templating import h, html, raw, url
 
@@ -51,7 +52,7 @@ def link_sent(*, lecture: Lecture) -> h:
     ])
 
 
-def register(*, lecture: Lecture, email: str, events: List[Event]) -> h:
+def register(*, lecture: Lecture, email: str, events: List[Registrations]) -> h:
     return layout(lecture.title, [
         h("h1")("Register for the next ", h("em")(lecture.title), " lecture (step 3/3)"),
         h("h2")("Your contact information"),
@@ -62,15 +63,15 @@ def register(*, lecture: Lecture, email: str, events: List[Event]) -> h:
             h("p")("Singup opens on the day of each lecture.")
         ] if not events else [
             h("div")(
-                h("h2")(event.title, " (", event.date.strftime("%a, %d.%m."), ")"),
+                h("h2")(registrations.event.title, " (", registrations.event.date.strftime("%a, %d.%m."), ")"),
                 h("ul")(
-                    h("li")("Please reserve a seat only if you will physically attend this lecture in ", h("strong")(event.location), "."),
-                    h("li")("Please come only after you successfully reserved a seat. There are ", h("strong")(f"{event.seats} seats"), " in total.")
+                    h("li")("Please reserve a seat only if you will physically attend this lecture in ", h("strong")(registrations.event.location), "."),
+                    h("li")("Please come only after you successfully reserved a seat. There are ", h("strong")(f"{registrations.event.seats} seats"), " in total.")
                 ),
                 h("form", method="POST")(
-                    h("input", type="hidden", name="reserve", value=event.id),
+                    h("input", type="hidden", name="reserve", value=registrations.event.id),
                     h("button", type="submit")("Reserve seat")
                 )
-            ) for event in events
+            ) for registrations in events
         ]
     ])

@@ -65,7 +65,7 @@ def get_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
     else:
         today = datetime.date.today()
         events = [
-            event for event in cig.data.EVENTS.values()
+            req.app["db"].registrations(event=event) for event in cig.data.EVENTS.values()
             if event.lecture == lecture.id and event.date == today
         ]
         return aiohttp.web.Response(
