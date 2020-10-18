@@ -1,6 +1,7 @@
 # (c) 2020 Niklas Fiekas <niklas.fiekas@tu-clausthal.de>
 
 import os.path
+import datetime
 import configparser
 import logging
 import hmac
@@ -61,8 +62,13 @@ def lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
     if not email:
         return aiohttp.web.Response(text=cig.view.login(lecture=lecture).render(), content_type="text/html")
     else:
+        today = datetime.date.today()
+        events = [
+            event for event in cig.data.EVENTS.values()
+            if event.lecture == lecture.id and event.date == today
+        ]
         return aiohttp.web.Response(
-            text=cig.view.register(lecture=lecture, email=email).render(),
+            text=cig.view.register(lecture=lecture, email=email, events=events).render(),
             content_type="text/html")
 
 

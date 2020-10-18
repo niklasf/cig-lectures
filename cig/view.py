@@ -2,7 +2,7 @@ from typing import List, Optional
 
 import cig.data
 
-from cig.data import Lecture
+from cig.data import Lecture, Event
 from cig.templating import h, html, raw, url
 
 
@@ -51,12 +51,26 @@ def link_sent(*, lecture: Lecture) -> h:
     ])
 
 
-def register(*, lecture: Lecture, email: str) -> h:
+def register(*, lecture: Lecture, email: str, events: List[Event]) -> h:
     return layout(lecture.title, [
         h("h1")("Register for the next ", h("em")(lecture.title), " lecture (step 3/3)"),
         h("h2")("Your contact information"),
         h("p")("You are logged in as ", h("strong")(email), "."),
         h("p")("We do not need additional contact information at this time. But please keep your details updated with the Studentensekretariat."),
-        h("h2")("Signup not yet open"),
-        h("p")("Singup opens on the day of each lecture.")
+        [
+            h("h2")("Signup not yet open"),
+            h("p")("Singup opens on the day of each lecture.")
+        ] if not events else [
+            h("div")(
+                h("h2")(event.title, " (", event.date.strftime("%a, %d.%m."), ")"),
+                h("ul")(
+                    h("li")("Please reserve a seat only if you will physically attend this lecture in ", h("strong")(event.location), "."),
+                    h("li")("Please come only after you successfully reserved a seat. There are ", h("strong")(f"{event.seats} seats"), " in total.")
+                ),
+                h("form", method="POST")(
+                    h("input", type="hidden", name="reserve", value=event.id),
+                    h("button", type="submit")("Reserve seat")
+                )
+            ) for event in events
+        ]
     ])
