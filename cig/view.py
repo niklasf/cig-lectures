@@ -85,7 +85,7 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
             h("p")("We do not need additional contact information at this time. But please keep your details updated with the Studentensekretariat.")
         ),
         h("section")(
-            h("h2")("Signup not yet open"),
+            h("h2")("Signup not open, yet"),
             h("p")("Singup opens on the day of each lecture.")
         ) if not events else [
             h("section", klass={
