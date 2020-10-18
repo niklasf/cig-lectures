@@ -63,12 +63,13 @@ def main(argv: List[str]) -> None:
     ] + argv)
 
     bind = config.get("server", "bind")
-    bind = config.get("server", "port")
+    port = config.get("server", "port")
 
     app = aiohttp.web.Application()
     app["db"] = cig.db.Database()
     app["secret"] = config.get("server", "secret")
     app.add_routes(routes)
+    app.router.add_static("/static", os.path.join(os.path.dirname(__file__), "..", "static"))
     try:
         aiohttp.web.run_app(app, host=bind, port=port)
     finally:

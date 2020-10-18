@@ -9,9 +9,13 @@ def layout(title: str, body: List[h]) -> h:
         h("head")(
             h("meta", charset="utf-8"),
             h("meta", name="viewport", content="width=device-width,initial-scale=1"),
-            h("title")("CIG Lectures: ", title)
+            h("title")("CIG Lectures: ", title),
+            h("link", rel="shortcut icon", href="/static/tuc/favicon.ico"),
         ),
-        h("body")(body)
+        h("body")(
+            h("img", src="/static/tuc/logo.svg"),
+            body
+        )
     )
 
 
