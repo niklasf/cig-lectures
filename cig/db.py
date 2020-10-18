@@ -75,7 +75,7 @@ class Registrations:
                 yield Row(None, registration.name, registration.time, registration.admin, True)
             else:
                 yield Row(n, registration.name, registration.time, registration.admin, False)
-            n += 1
+                n += 1
 
     def has(self, email: str) -> bool:
         return any(row.name == email for row in self.rows())
