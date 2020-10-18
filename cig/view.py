@@ -68,6 +68,20 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations]) -> h:
                     h("li")("Please reserve a seat only if you will physically attend this lecture in ", h("strong")(registrations.event.location), "."),
                     h("li")("Please come only after you successfully reserved a seat. There are ", h("strong")(f"{registrations.event.seats} seats"), " in total.")
                 ),
+                h("table")(
+                    h("thead")(
+                        h("tr")(
+                            h("th")("#"),
+                            h("th")("Name")
+                        )
+                    ),
+                    h("tbody")([
+                        h("tr")(
+                            h("td")(row.n),
+                            h("td")(row.name)
+                        ) for row in registrations.rows()
+                    ])
+                ),
                 h("form", method="POST")(
                     h("input", type="hidden", name="reserve", value=registrations.event.id),
                     h("button", type="submit")("Reserve seat")

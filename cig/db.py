@@ -46,7 +46,23 @@ class Registration:
     deleted: bool
 
 
+@dataclasses.dataclass
+class Row:
+    n: Optional[int]
+    name: str
+    deleted: bool
+
+
 class Registrations:
-    def __init__(self, event, registrations):
+    def __init__(self, event: Event, registrations: List[Registration]):
         self.event = event
         self.registrations = registrations
+
+    def rows(self):
+        n = 1
+        for registration in self.registrations:
+            if registration.deleted:
+                yield Row(None, registration.name, True)
+            else:
+                yield Row(n, registration.name, False)
+            n += 1
