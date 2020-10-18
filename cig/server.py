@@ -37,6 +37,7 @@ routes = aiohttp.web.RouteTableDef()
 
 @routes.get("/")
 async def index(_req: aiohttp.web.Request) -> aiohttp.web.Response:
+    # Show list of lectures.
     return aiohttp.web.Response(text=cig.view.index().render(), content_type="text/html")
 
 
@@ -62,8 +63,10 @@ async def get_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
     email = extract_verified_email(req)
     admin = email is not None and req.query.get("admin", "") == "yes" and cig.data.admin(email)
     if not email:
+        # Show login form.
         return aiohttp.web.Response(text=cig.view.login(lecture=lecture).render(), content_type="text/html")
     else:
+        # Show registration form.
         today = datetime.date.today()
         events = [
             req.app["db"].registrations(event=event) for event in cig.data.EVENTS.values()
@@ -82,6 +85,7 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
     form = await req.post()
 
     if not email:
+        # Process login form.
         try:
             email = normalize_email(str(form["email"]))
         except KeyError:
@@ -123,6 +127,7 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
             text=cig.view.link_sent(lecture=lecture, email_text="\n".join(email_text) if req.app["dev"] else None).render(),
             content_type="text/html")
     else:
+        # Process registration form.
         try:
             event = cig.data.EVENTS[int(str(form["reserve"]))]
         except (KeyError, ValueError):
@@ -134,6 +139,7 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
             if name and (admin or event.date == datetime.date.today()):
                 req.app["db"].maybe_register(event=event.id, name=name, admin=admin)
 
+        # Process admin actions on registration form.
         if admin:
             try:
                 delete = int(str(form["delete"]))
