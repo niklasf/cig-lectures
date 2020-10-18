@@ -49,3 +49,12 @@ def link_sent(*, lecture: Lecture) -> h:
         h("h1")("Link sent (step 2/3)"),
         h("p")("Check your inbox.")
     ])
+
+
+def register(*, lecture: Lecture, email: str) -> h:
+    return layout(lecture.title, [
+        h("h1")("Register for the next ", h("em")(lecture.title, " lecture (step 3/3)")),
+        h("h2")("Your contact information"),
+        h("p")("You are logged in as ", h("strong")(email), "."),
+        h("p")("We do not need additional contact information at this time. But please keep your details updated with the Studentensekretariat.")
+    ])

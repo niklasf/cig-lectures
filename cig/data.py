@@ -2,6 +2,11 @@ import dataclasses
 
 
 @dataclasses.dataclass
+class Event:
+    title: str
+
+
+@dataclasses.dataclass
 class Lecture:
     title: str
 

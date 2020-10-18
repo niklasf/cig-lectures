@@ -61,7 +61,9 @@ def lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
     if not email:
         return aiohttp.web.Response(text=cig.view.login(lecture=lecture).render(), content_type="text/html")
     else:
-        return aiohttp.web.Response(text=email, content_type="text/html")
+        return aiohttp.web.Response(
+            text=cig.view.register(lecture=lecture, email=email).render(),
+            content_type="text/html")
 
 
 @routes.post("/{lecture}")
@@ -81,6 +83,8 @@ async def lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
         token = hmac_email(req.app["secret"], email)
         print(req.app["base_url"].rstrip("/") + cig.templating.url(req.match_info["lecture"], email=email, hmac=token))
         return aiohttp.web.Response(text=cig.view.link_sent(lecture=lecture).render(), content_type="text/html")
+    else:
+        raise NotImplemented
 
 
 def main(argv: List[str]) -> None:
