@@ -1,10 +1,11 @@
-from typing import List, Optional
+import datetime
 
 import cig.data
 
 from cig.db import Registrations
 from cig.data import Lecture, Event
 from cig.templating import h, html, raw, url
+from typing import List, Optional
 
 
 def layout(title: Optional[str], body: List[h]) -> h:
@@ -67,7 +68,7 @@ def link_sent(*, lecture: Lecture) -> h:
     ])
 
 
-def register(*, lecture: Lecture, email: str, events: List[Registrations], admin: bool = False) -> h:
+def register(*, lecture: Lecture, email: str, events: List[Registrations], admin: bool = False, today: datetime.date) -> h:
     def modifier(row):
         if row.deleted:
             return h("del")
@@ -87,7 +88,9 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
             h("h2")("Signup not yet open"),
             h("p")("Singup opens on the day of each lecture.")
         ) if not events else [
-            h("section")(
+            h("section", klass={
+                "not-today": registrations.event.date != today,
+            })(
                 h("h2")(registrations.event.title, " (", registrations.event.date.strftime("%a, %d.%m."), ")"),
                 h("p")("Please reserve a seat only if you will physically attend this lecture in ", h("strong")(registrations.event.location), "."),
                 h("p")("Please come only after you successfully reserved a seat. There are ", h("strong")(f"{registrations.event.seats} seats"), " in total."),

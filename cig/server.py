@@ -67,10 +67,10 @@ def get_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
         today = datetime.date.today()
         events = [
             req.app["db"].registrations(event=event) for event in cig.data.EVENTS.values()
-            if event.lecture == lecture.id and event.date == today
+            if event.lecture == lecture.id and (event.date == today or (admin and abs(event.date - today) <= datetime.timedelta(days=2)))
         ]
         return aiohttp.web.Response(
-            text=cig.view.register(lecture=lecture, email=email, events=events, admin=admin).render(),
+            text=cig.view.register(lecture=lecture, email=email, events=events, admin=admin, today=today).render(),
             content_type="text/html")
 
 

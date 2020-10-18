@@ -20,9 +20,13 @@ img { /* logo */
 }
 
 section {
-  border: 1px solid #aaa;
+  border: 2px solid #aaa;
   padding: 1em;
   margin: 2em 0;
+}
+
+section.not-today {
+  border: 1px dashed #aaa;
 }
 
 p.error {
