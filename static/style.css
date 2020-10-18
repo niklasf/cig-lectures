@@ -2,6 +2,10 @@ body {
   font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
+h2 {
+  margin: 0;
+}
+
 main {
   max-width: 800px;
   margin: auto;
@@ -13,7 +17,7 @@ img { /* logo */
 
 section {
   border: 1px solid #aaa;
-  padding: 0.5em 1em;
+  padding: 1em;
   margin: 2em 0;
 }
 
@@ -35,4 +39,9 @@ tr.overhang {
 th, td {
   border: 1px solid #aaa;
   padding: 0.5em;
+}
+
+input {
+  width: 100%;
+  max-width: 400px;
 }

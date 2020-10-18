@@ -43,8 +43,8 @@ def login(*, lecture: Lecture, error: Optional[str] = None) -> h:
         h("section")(
             h("form", method="POST")(
                 error and h("p")(error),
-                h("input", type="email", placeholder="max.mustermann@tu-clausthal.de", name="email", required=True),
-                h("button", type="submit")("Send login link")
+                h("p")("E-Mail: ", h("input", type="email", placeholder="max.mustermann@tu-clausthal.de", name="email", required=True)),
+                h("p")(h("button", type="submit")("Send login link"))
             )
         ),
     ])
@@ -91,7 +91,7 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                             h("td")(row.n),
                             h("td")(row.name),
                             h("td")(
-                                row.time.strftime("Successfully registered %d.%m. %H:%m" if row.n <= registrations.event.seats else "No seat was available at %d.%m. %H:%m. We will make sure to provide the lecture materials online.")
+                                row.time.strftime("Successfully registered %d.%m. %H:%m" if row.n <= registrations.event.seats else "No seat is available (%d.%m. %H:%m). We will make sure to provide the lecture materials online.")
                             )
                         ) for row in registrations.rows() if row.name == email or admin
                     ])
