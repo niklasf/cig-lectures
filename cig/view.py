@@ -70,7 +70,9 @@ def link_sent(*, lecture: Lecture) -> h:
 
 def register(*, lecture: Lecture, email: str, events: List[Registrations], admin: bool = False, today: datetime.date) -> h:
     def modifier(row):
-        if row.deleted:
+        if row.deleted and row.admin:
+            return lambda *children: h("del")(h("ins")(*children))
+        elif row.deleted:
             return h("del")
         elif row.admin:
             return h("ins")
