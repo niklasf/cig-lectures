@@ -10,7 +10,7 @@ from typing import Union, Optional, List, Dict
 Attribute = Union[str, bool, None, bool, int, Dict[str, bool]]
 
 
-def attribute(attr: str) -> str:
+def _attribute_name(attr: str) -> str:
     if attr == "klass":
         return "class"
     else:
@@ -24,7 +24,7 @@ class h:
         assert _name.isalnum()
         self.name = _name
 
-        self.attrs = {attribute(attr): value for attr, value in attrs.items()}
+        self.attrs = {_attribute_name(attr): value for attr, value in attrs.items()}
         self.children: Optional[List[Union[h, raw]]] = None
 
     def __call__(self, *args: Child) -> h:
