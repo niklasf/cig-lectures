@@ -21,6 +21,12 @@ section {
   margin: 2em 0;
 }
 
+p.error {
+  background: red;
+  color: white;
+  padding: 1em;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -44,4 +50,10 @@ th, td {
 input {
   width: 100%;
   max-width: 400px;
+}
+
+@media print {
+  .no-print {
+    display: none;
+  }
 }

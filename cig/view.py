@@ -19,7 +19,7 @@ def layout(title: Optional[str], body: List[h]) -> h:
         ),
         h("body")(
             h("main")(
-                h("img", src="/static/tuc/logo.svg"),
+                h("img", src="/static/tuc/logo.svg", klass="no-print"),
                 body
             )
         )
@@ -42,7 +42,7 @@ def login(*, lecture: Lecture, error: Optional[str] = None) -> h:
         h("h1")(f"Register for the next ", h("em")(lecture.title), " lecture (step 1/3)"),
         h("section")(
             h("form", method="POST")(
-                error and h("p")(error),
+                error and h("p", klass="error")(error),
                 h("p")(
                     h("label", for_="email")("E-Mail:"),
                     " ",
@@ -65,8 +65,8 @@ def link_sent(*, lecture: Lecture) -> h:
 
 def register(*, lecture: Lecture, email: str, events: List[Registrations], admin: bool = False) -> h:
     return layout(lecture.title, [
-        h("h1")("Register for the next ", h("em")(lecture.title), " lecture (step 3/3)"),
-        h("section")(
+        h("h1", klass="no-print")("Register for the next ", h("em")(lecture.title), " lecture (step 3/3)"),
+        h("section", klass="no-print")(
             h("h2")("Your contact information"),
             h("p")("You are logged in as ", h("strong")(email), "."),
             h("p")("We do not need additional contact information at this time. But please keep your details updated with the Studentensekretariat.")
