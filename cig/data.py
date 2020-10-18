@@ -56,4 +56,4 @@ EVENTS = {
 
 
 def admin(email: str) -> bool:
-    return False and email in (f"{prefix}@tu-clausthal.de" for prefix in ["dix", "niklas.fiekas", "tobias.ahlbrecht"]) # TODO
+    return False and email in (f"{prefix}@tu-clausthal.de" for prefix in ["dix", "niklas.fiekas", "tobias.ahlbrecht"])  # TODO

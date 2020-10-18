@@ -5,9 +5,9 @@ import datetime
 import cig.data
 
 from cig.db import Registrations, Row
-from cig.data import Lecture, Event
+from cig.data import Lecture
 from cig.templating import h, html, raw, url
-from typing import List, Optional, Union, Callable
+from typing import List, Optional, Callable
 
 
 def layout(title: Optional[str], body: h) -> h:
@@ -46,7 +46,7 @@ def index() -> h:
 
 def login(*, lecture: Lecture, error: Optional[str] = None) -> h:
     return layout(lecture.title, h("main")(
-        h("h1")(f"Register for the next ", h("em")(lecture.title), " lecture (step 1/3)"),
+        h("h1")("Register for the next ", h("em")(lecture.title), " lecture (step 1/3)"),
         h("section")(
             h("form", method="POST")(
                 error and h("p", klass="error")(error),
