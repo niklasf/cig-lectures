@@ -60,7 +60,7 @@ def extract_verified_email(req: aiohttp.web.Request) -> Optional[str]:
 async def get_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
     lecture = extract_lecture(req)
     email = extract_verified_email(req)
-    admin = email is not None and cig.data.admin(email)
+    admin = email is not None and req.query.get("admin", "") == "yes" and cig.data.admin(email)
     if not email:
         return aiohttp.web.Response(text=cig.view.login(lecture=lecture).render(), content_type="text/html")
     else:
@@ -93,6 +93,18 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
         magic_link = req.app["base_url"].rstrip("/") + cig.templating.url(req.match_info["lecture"], email=email, hmac=token)
         print(magic_link)
 
+
+        email_text = []
+        email_text.append(f"Continue here: {magic_link}")
+        if cig.data.admin(email):
+            email_text.append("")
+            email_text.append(f"Admin interface: {magic_link}&admin=yes")
+        email_text.append("")
+        email_text.append("You can also bookmark this link for future lectures.")
+        email_text.append("")
+        email_text.append("---")
+        email_text.append(f"Automated email on behalf of {lecture.lecturer} and team")
+
         if not req.app["dev"]:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
@@ -102,13 +114,13 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
                         "from": f"CIG Lectures <noreply@{req.app['mailgun_domain']}>",
                         "to": email,
                         "subject": f"Register for the next {lecture.title} lecture (step 2/3)",
-                        "text": f"Continue here: {magic_link}\n\nYou can also bookmark this link for future lectures.\n\n---\nAutomated email on behalf of {lecture.lecturer} and team"
+                        "text": "\n".join(email_text),
                     }
                 ) as res:
                     print("Response:", res.status, "-", await res.text())
 
         return aiohttp.web.Response(
-            text=cig.view.link_sent(lecture=lecture, magic_link=magic_link if req.app["dev"] else None).render(),
+            text=cig.view.link_sent(lecture=lecture, email_text="\n".join(email_text) if req.app["dev"] else None).render(),
             content_type="text/html")
     else:
         try:

@@ -51,7 +51,7 @@ def login(*, lecture: Lecture, error: Optional[str] = None) -> h:
             h("form", method="POST")(
                 error and h("p", klass="error")(error),
                 h("p")(
-                    h("label", for_="email")("E-Mail:"),
+                    h("label", for_="email")("Email:"),
                     " ",
                     h("input", type="email", placeholder="max.mustermann@tu-clausthal.de", id="email", name="email", required=True)
                 ),
@@ -61,15 +61,15 @@ def login(*, lecture: Lecture, error: Optional[str] = None) -> h:
     ))
 
 
-def link_sent(*, lecture: Lecture, magic_link: Optional[str]) -> h:
+def link_sent(*, lecture: Lecture, email_text: Optional[str]) -> h:
     return layout(lecture.title, h("main")(
         h("h1")("Link sent (step 2/3)"),
         h("section")(
             h("p")("Check your inbox."),
             h("p")(
-                "Development mode enabled. This link would have been sent: ",
-                h("code")(h("a", href=magic_link)(magic_link))
-            ) if magic_link else None
+                "Development mode enabled. This email would have been sent: ",
+                h("pre")(email_text)
+            ) if email_text else None
         )
     ))
 
@@ -118,10 +118,10 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                             "me": row.name == email,
                             "overhang": row.n is not None and row.n > registrations.event.seats,
                         })(
-                            h("td")(modifier(row)(f"#{row.n}")),
+                            h("td")(modifier(row)(f"#{row.n}") if row.n is not None else ""),
                             h("td")(modifier(row)(row.name)),
                             h("td")(
-                                "Deleted by admin" if row.deleted else row.time.strftime("Successfully registered %d.%m. %H:%m" if row.n is not None and row.n <= registrations.event.seats else "Seat not available (%d.%m. %H:%m). We will make sure to provide the lecture materials online.")
+                                "Reservation deleted by admin" if row.deleted else row.time.strftime("Successfully registered %d.%m. %H:%m" if row.n is not None and row.n <= registrations.event.seats else "Seat not available (%d.%m. %H:%m). We will make sure to provide the lecture materials online.")
                             ),
                             h("td", klass="no-print")(
                                 h("form", method="POST")(

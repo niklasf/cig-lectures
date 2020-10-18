@@ -31,6 +31,7 @@ section {
 
 section.not-today {
   border: 1px dashed #E6E6E6;
+  color: #808080;
 }
 
 p.error {
@@ -44,12 +45,10 @@ table {
   border-collapse: collapse;
   margin-bottom: 1em;
 }
-
 tr.me {
   background: #008C4F;
   color: white;
 }
-
 tr.overhang {
   background: #8C1C00;
   color: white;
@@ -63,6 +62,10 @@ th, td {
 input {
   width: 100%;
   max-width: 400px;
+}
+
+pre {
+  white-space: pre-wrap;
 }
 
 @media print {
