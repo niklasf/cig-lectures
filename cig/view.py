@@ -14,7 +14,8 @@ def layout(title: Optional[str], body: List[h]) -> h:
             h("meta", charset="utf-8"),
             h("meta", name="viewport", content="width=device-width,initial-scale=1"),
             h("title")("CIG Lectures WS2020", f": {title}" if title else None),
-            h("link", rel="shortcut icon", href="/static/tuc/favicon.ico"),
+            h("link", rel="stylesheet", href="/static/style.css"),
+            h("link", rel="shortcut icon", href="/static/tuc/favicon.ico")
         ),
         h("body")(
             h("img", src="/static/tuc/logo.svg"),
@@ -76,7 +77,10 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations]) -> h:
                         )
                     ),
                     h("tbody")([
-                        h("tr")(
+                        h("tr", klass={
+                            "me": row.name == email,
+                            "overhang": row.n > registrations.event.seats,
+                        })(
                             h("td")(row.n),
                             h("td")(row.name)
                         ) for row in registrations.rows()

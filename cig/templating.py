@@ -47,7 +47,7 @@ class h:
             if isinstance(value, list):
                 value = " ".join(value)
             elif isinstance(value, dict):
-                value = " ".join(key for key, val in value if val)
+                value = " ".join(key for key, val in value.items() if val)
             builder.append("=\"")
             builder.append(escape(str(value)))
             builder.append("\"")
