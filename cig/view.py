@@ -28,7 +28,7 @@ def layout(title: Optional[str], body: h) -> h:
             ),
             body,
             h("footer")(
-                cig.db.now().isoformat(timespec="seconds"), ". ",
+                "Server time: ", cig.db.now().strftime("%d.%m.%Y %H:%M:%S"), ". ",
                 "This program is free/libre open source software. ",
                 h("a", href="https://github.com/niklasf/cig-lectures")("GitHub"), "."
             )
