@@ -47,12 +47,12 @@ EVENTS = {
         # Room capacities: https://www.tu-clausthal.de/fileadmin/TU_Clausthal/dokumente/Corona/Raumverzeichnis.pdf
 
         # Complexity
-        Event(1001, "complexity", datetime.date(2020, 10, 28), "Complexity Lecture 1", "T1", 12),
-        Event(1002, "complexity", datetime.date(2020, 10, 29), "Complexity Lecture 2", "T1", 12),
-        Event(1003, "complexity", datetime.date(2020, 11, 4), "Complexity Lecture 3", "T1", 12),
-        Event(1004, "complexity", datetime.date(2020, 11, 5), "Complexity Lecture 4", "T1", 12),
-        Event(1005, "complexity", datetime.date(2020, 11, 11), "Complexity Lab 1", "D8-210", 5), # 4/5
-        Event(1006, "complexity", datetime.date(2020, 11, 12), "Complexity Exercise 1", "D8-210", 5), # 4/5
+        Event(1001, "complexity", datetime.date(2020, 10, 28), "Complexity Lecture 1", "D5-105", 12),
+        Event(1002, "complexity", datetime.date(2020, 10, 29), "Complexity Lecture 2", "D5-105", 12),
+        Event(1003, "complexity", datetime.date(2020, 11, 4), "Complexity Lecture 3", "D5-105", 12),
+        Event(1004, "complexity", datetime.date(2020, 11, 5), "Complexity Lecture 4", "D5-105", 12),
+        Event(1005, "complexity", datetime.date(2020, 11, 11), "Complexity Lab 1", "D8-210", 5),  # 4/5
+        Event(1006, "complexity", datetime.date(2020, 11, 12), "Complexity Exercise 1", "D8-210", 5),  # 4/5
 
         # Informatics III
         Event(2001, "info3", datetime.date(2020, 10, 26), "Informatics III Lecture 1", "Audimax", 30),
