@@ -124,7 +124,7 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                             h("td")(modifier(row)(f"#{row.n}") if row.n is not None else ""),
                             h("td")(modifier(row)(row.name)),
                             h("td")(
-                                "Reservation deleted by admin" if row.deleted else row.time.strftime("Successfully registered %d.%m. %H:%m" if row.n is not None and row.n <= registrations.event.seats else "Seat not available (%d.%m. %H:%m). We will make sure to provide the lecture materials online.")
+                                "Reservation deleted by admin" if row.deleted else row.time.strftime("Successfully registered %d.%m. %H:%M" if row.n is not None and row.n <= registrations.event.seats else "Seat not available (%d.%m. %H:%m). We will make sure to provide the lecture materials online.")
                             ),
                             h("td", klass="no-print")(
                                 h("form", method="POST")(
