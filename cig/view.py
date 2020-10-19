@@ -4,6 +4,7 @@ import pytz
 import datetime
 
 import cig.data
+import cig.db
 
 from cig.db import Registrations, Row
 from cig.data import Lecture
@@ -27,7 +28,7 @@ def layout(title: Optional[str], body: h) -> h:
             ),
             body,
             h("footer")(
-                datetime.datetime.now(pytz.timezone("Europe/Berlin")).isoformat(timespec="seconds"), ". ",
+                cig.db.now().isoformat(timespec="seconds"), ". ",
                 "This program is free/libre open source software. ",
                 h("a", href="https://github.com/niklasf/cig-lectures")("GitHub"), "."
             )
