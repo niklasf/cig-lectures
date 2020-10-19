@@ -5,6 +5,7 @@ import configparser
 import datetime
 import logging
 import hmac
+import textwrap
 
 import aiohttp
 import aiohttp.web
@@ -39,6 +40,14 @@ routes = aiohttp.web.RouteTableDef()
 async def index(_req: aiohttp.web.Request) -> aiohttp.web.Response:
     # Show list of lectures.
     return aiohttp.web.Response(text=cig.view.index().render(), content_type="text/html")
+
+
+@routes.get("/robots.txt")
+async def robots(_req: aiohttp.web.Request) -> aiohttp.web.Response:
+    return aiohttp.web.Response(text=textwrap.dedent("""\
+        User-agent: *
+        Disallow: /
+        """))
 
 
 def extract_lecture(req: aiohttp.web.Request) -> Lecture:
