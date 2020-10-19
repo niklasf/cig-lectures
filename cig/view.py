@@ -1,5 +1,6 @@
 # (c) 2020 Niklas Fiekas <niklas.fiekas@tu-clausthal.de>
 
+import pytz
 import datetime
 
 import cig.data
@@ -25,7 +26,8 @@ def layout(title: Optional[str], body: h) -> h:
                 h("img", src="/static/tuc/logo.svg", klass="no-print"),
             ),
             body,
-            h("footer", klass="no-print")(
+            h("footer")(
+                datetime.datetime.now(pytz.timezone("Europe/Berlin")).isoformat(timespec="seconds"), ". ",
                 "This program is free/libre open source software. ",
                 h("a", href="https://github.com/niklasf/cig-lectures")("GitHub"), "."
             )

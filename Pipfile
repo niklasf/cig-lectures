@@ -5,6 +5,7 @@ verify_ssl = true
 
 [packages]
 aiohttp = "~=3.6.3"
+pytz = "~=2020.1"
 
 [scripts]
 server = "python -m cig"
