@@ -107,7 +107,7 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
         if not req.app["dev"]:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
-                    f"https://api.mailgun.net/v3/{req.app['mailgun_domain']}/messages",
+                    f"https://api.eu.mailgun.net/v3/{req.app['mailgun_domain']}/messages",
                     auth=aiohttp.BasicAuth("api", req.app["mailgun_key"]),
                     data={
                         "from": f"CIG Lectures <noreply@{req.app['mailgun_domain']}>",
