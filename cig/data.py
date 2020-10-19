@@ -5,16 +5,6 @@ import dataclasses
 
 
 @dataclasses.dataclass
-class Event:
-    id: int
-    lecture: str
-    date: datetime.date
-    title: str
-    location: str
-    seats: int
-
-
-@dataclasses.dataclass
 class Lecture:
     id: str
     title: str
@@ -24,10 +14,20 @@ class Lecture:
 LECTURES = {
     lecture.id: lecture for lecture in [
         Lecture("complexity", "Complexity Theory", "Jürgen Dix"),
-        Lecture("informatics", "Informatics III", "Jürgen Dix"),
+        Lecture("info3", "Informatics III", "Jürgen Dix"),
         Lecture("example", "Example Course (with daily events)", "Jürgen Dix"),
     ]
 }
+
+
+@dataclasses.dataclass
+class Event:
+    id: int
+    lecture: str
+    date: datetime.date
+    title: str
+    location: str
+    seats: int
 
 
 EVENTS = {
@@ -44,13 +44,18 @@ EVENTS = {
         Event(9, "example", datetime.date(2020, 10, 25), "Example Lecture 9", "Raum mit drei Plätzen", 3),
         Event(10, "example", datetime.date(2020, 10, 26), "Example Lecture 10", "Raum mit drei Plätzen", 3),
 
+        # Room capacities: https://www.tu-clausthal.de/fileadmin/TU_Clausthal/dokumente/Corona/Raumverzeichnis.pdf
+
         # Complexity
-        Event(1001, "complexity", datetime.date(2020, 10, 28), "Complexity Lecture 1", "T1", 15),
-        Event(1002, "complexity", datetime.date(2020, 10, 29), "Complexity Lecture 2", "T1", 15),
-        Event(1003, "complexity", datetime.date(2020, 11, 4), "Complexity Lecture 3", "T1", 15),
-        Event(1004, "complexity", datetime.date(2020, 11, 5), "Complexity Lecture 4", "T1", 15),
-        Event(1005, "complexity", datetime.date(2020, 11, 11), "Complexity Lab 1", "Seminarraum 210", 3),
-        Event(1006, "complexity", datetime.date(2020, 11, 12), "Complexity Exercise 1", "Seminarraum 210", 3),
+        Event(1001, "complexity", datetime.date(2020, 10, 28), "Complexity Lecture 1", "T1", 12),
+        Event(1002, "complexity", datetime.date(2020, 10, 29), "Complexity Lecture 2", "T1", 12),
+        Event(1003, "complexity", datetime.date(2020, 11, 4), "Complexity Lecture 3", "T1", 12),
+        Event(1004, "complexity", datetime.date(2020, 11, 5), "Complexity Lecture 4", "T1", 12),
+        Event(1005, "complexity", datetime.date(2020, 11, 11), "Complexity Lab 1", "D8-210", 5), # 4/5
+        Event(1006, "complexity", datetime.date(2020, 11, 12), "Complexity Exercise 1", "D8-210", 5), # 4/5
+
+        # Informatics III
+        Event(2001, "info3", datetime.date(2020, 10, 26), "Informatics III Lecture 1", "Audimax", 30),
     ]
 }
 
