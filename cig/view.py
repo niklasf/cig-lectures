@@ -8,7 +8,7 @@ import cig.db
 
 from cig.db import Registrations, Row
 from cig.data import Lecture
-from tinyhtml import Frag, h, html, raw
+from tinyhtml import Frag, h, html, raw, frag
 from urllib.parse import quote as urlquote
 from typing import List, Optional, Callable, Union
 
@@ -21,35 +21,35 @@ def layout(title: Optional[str], body: Frag) -> Frag:
             h("meta", name="viewport", content="width=device-width,initial-scale=1"),
             h("title")("CIG Lectures WS2020", f": {title}" if title else None),
             h("link", rel="stylesheet", href="/static/style.css"),
-            h("link", rel="shortcut icon", href="/static/tuc/favicon.ico")
+            h("link", rel="shortcut icon", href="/static/tuc/favicon.ico"),
         ),
         h("body")(
             h("header")(
                 h("img", src="/static/tuc/logo.svg", klass="no-print"),
             ),
-            body,
+            h("main")(body),
             h("footer")(
                 "Server time: ", cig.db.now().strftime("%d.%m.%Y %H:%M:%S"), ". ",
                 "This program is free/libre open source software. ",
-                h("a", href="https://github.com/niklasf/cig-lectures")("GitHub"), "."
-            )
-        )
+                h("a", href="https://github.com/niklasf/cig-lectures")("GitHub"), ".",
+            ),
+        ),
     )
 
 
 def index() -> Frag:
-    return layout(None, h("main")(
+    return layout(None, frag(
         h("h1")("CIG Lectures WS2020"),
-        h("ul")([
+        h("ul")(
             h("li")(
                 h("a", href=url(name))(lecture.title)
             ) for name, lecture in cig.data.LECTURES.items()
-        ])
+        )
     ))
 
 
 def login(*, lecture: Lecture, error: Optional[str] = None) -> Frag:
-    return layout(lecture.title, h("main")(
+    return layout(lecture.title, frag(
         h("h1")("Register for the next ", h("em")(lecture.title), " lecture (step 1/3)"),
         h("section")(
             h("form", method="POST")(
@@ -66,7 +66,7 @@ def login(*, lecture: Lecture, error: Optional[str] = None) -> Frag:
 
 
 def link_sent(*, lecture: Lecture, email_text: Optional[str]) -> Frag:
-    return layout(lecture.title, h("main")(
+    return layout(lecture.title, frag(
         h("h1")("Link sent (step 2/3)"),
         h("section")(
             h("p")("Check your inbox."),
@@ -89,7 +89,7 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
         else:
             return h("span")
 
-    return layout(lecture.title, h("main")(
+    return layout(lecture.title, frag(
         h("h1", klass="no-print")("Register for the next ", h("em")(lecture.title), " lecture (step 3/3)"),
         h("section", klass="no-print")(
             h("h2")("Your contact information"),
@@ -143,7 +143,7 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                     h("button", type="submit")("Reserve seat (admin)" if admin else "Reserve seat")
                 ) if admin or not registrations.has(email) else None,
             ) for registrations in events
-        ]
+        ],
     ))
 
 
