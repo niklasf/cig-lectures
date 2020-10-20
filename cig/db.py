@@ -6,9 +6,14 @@ import os.path
 import datetime
 import sqlite3
 import dataclasses
+import pytz
 
 from typing import Tuple, Optional, List, Iterator
 from cig.data import Event
+
+
+def now() -> datetime.datetime:
+    return datetime.datetime.now(pytz.timezone("Europe/Berlin"))
 
 
 class Database:
@@ -21,7 +26,7 @@ class Database:
     def maybe_register(self, *, event: int, name: str, admin: bool = False) -> None:
         with self.conn:
             try:
-                self.conn.execute("INSERT INTO registrations (event, name, time, admin, deleted) VALUES (?, ?, ?, ?, FALSE)", (event, name, datetime.datetime.now().isoformat(sep=" "), admin))
+                self.conn.execute("INSERT INTO registrations (event, name, time, admin, deleted) VALUES (?, ?, ?, ?, FALSE)", (event, name, now().isoformat(sep=" "), admin))
             except sqlite3.IntegrityError:
                 pass
 

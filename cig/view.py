@@ -1,8 +1,10 @@
 # (c) 2020 Niklas Fiekas <niklas.fiekas@tu-clausthal.de>
 
+import pytz
 import datetime
 
 import cig.data
+import cig.db
 
 from cig.db import Registrations, Row
 from cig.data import Lecture
@@ -25,7 +27,8 @@ def layout(title: Optional[str], body: h) -> h:
                 h("img", src="/static/tuc/logo.svg", klass="no-print"),
             ),
             body,
-            h("footer", klass="no-print")(
+            h("footer")(
+                "Server time: ", cig.db.now().strftime("%d.%m.%Y %H:%M:%S"), ". ",
                 "This program is free/libre open source software. ",
                 h("a", href="https://github.com/niklasf/cig-lectures")("GitHub"), "."
             )
@@ -121,7 +124,7 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                             h("td")(modifier(row)(f"#{row.n}") if row.n is not None else ""),
                             h("td")(modifier(row)(row.name)),
                             h("td")(
-                                "Reservation deleted by admin" if row.deleted else row.time.strftime("Successfully registered %d.%m. %H:%m" if row.n is not None and row.n <= registrations.event.seats else "Seat not available (%d.%m. %H:%m). We will make sure to provide the lecture materials online.")
+                                "Reservation deleted by admin" if row.deleted else row.time.strftime("Successfully registered %d.%m. %H:%M" if row.n is not None and row.n <= registrations.event.seats else "Seat not available (%d.%m. %H:%M). We will make sure to provide the lecture materials online.")
                             ),
                             h("td", klass="no-print")(
                                 h("form", method="POST")(

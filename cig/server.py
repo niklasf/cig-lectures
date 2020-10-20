@@ -76,7 +76,7 @@ async def get_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
         return aiohttp.web.Response(text=cig.view.login(lecture=lecture).render(), content_type="text/html")
     else:
         # Show registration form.
-        today = datetime.date.today()
+        today = cig.db.now().date()
         events = [
             req.app["db"].registrations(event=event) for event in cig.data.EVENTS.values()
             if event.lecture == lecture.id and (event.date == today or (admin and abs(event.date - today) <= datetime.timedelta(days=14)))
@@ -140,7 +140,7 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
             name = str(form.get("name", email)).strip() if admin else email
             if "@" in name:
                 name = name.lower()
-            if name and (admin or event.date == datetime.date.today()):
+            if name and (admin or event.date == cig.db.now().date()):
                 req.app["db"].maybe_register(event=event.id, name=name, admin=admin)
 
         # Process admin actions on registration form.
