@@ -12,7 +12,6 @@ import aiohttp.web
 
 import cig.db
 import cig.view
-import cig.templating
 
 from typing import List, Optional
 from cig.data import Lecture
@@ -103,7 +102,7 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
             return aiohttp.web.Response(text=cig.view.login(lecture=lecture, error=str(err)).render(), content_type="text/html")
 
         token = hmac_email(req.app["secret"], email)
-        magic_link = req.app["base_url"].rstrip("/") + cig.templating.url(req.match_info["lecture"], email=email, hmac=token)
+        magic_link = req.app["base_url"].rstrip("/") + cig.view.url(req.match_info["lecture"], email=email, hmac=token)
         print(magic_link)
 
         email_text = "\n\n".join(line for line in [

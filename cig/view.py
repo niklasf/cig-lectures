@@ -8,11 +8,12 @@ import cig.db
 
 from cig.db import Registrations, Row
 from cig.data import Lecture
-from cig.templating import h, html, raw, url
-from typing import List, Optional, Callable
+from tinyhtml import Frag, h, html, raw
+from urllib.parse import quote as urlquote
+from typing import List, Optional, Callable, Union
 
 
-def layout(title: Optional[str], body: h) -> h:
+def layout(title: Optional[str], body: Frag) -> Frag:
     return html(lang="de")(
         raw("<!-- https://github.com/niklasf/cig-lectures -->"),
         h("head")(
@@ -36,7 +37,7 @@ def layout(title: Optional[str], body: h) -> h:
     )
 
 
-def index() -> h:
+def index() -> Frag:
     return layout(None, h("main")(
         h("h1")("CIG Lectures WS2020"),
         h("ul")([
@@ -47,7 +48,7 @@ def index() -> h:
     ))
 
 
-def login(*, lecture: Lecture, error: Optional[str] = None) -> h:
+def login(*, lecture: Lecture, error: Optional[str] = None) -> Frag:
     return layout(lecture.title, h("main")(
         h("h1")("Register for the next ", h("em")(lecture.title), " lecture (step 1/3)"),
         h("section")(
@@ -64,7 +65,7 @@ def login(*, lecture: Lecture, error: Optional[str] = None) -> h:
     ))
 
 
-def link_sent(*, lecture: Lecture, email_text: Optional[str]) -> h:
+def link_sent(*, lecture: Lecture, email_text: Optional[str]) -> Frag:
     return layout(lecture.title, h("main")(
         h("h1")("Link sent (step 2/3)"),
         h("section")(
@@ -77,8 +78,8 @@ def link_sent(*, lecture: Lecture, email_text: Optional[str]) -> h:
     ))
 
 
-def register(*, lecture: Lecture, email: str, events: List[Registrations], admin: bool = False, today: datetime.date) -> h:
-    def modifier(row: Row) -> Callable[[str], h]:
+def register(*, lecture: Lecture, email: str, events: List[Registrations], admin: bool = False, today: datetime.date) -> Frag:
+    def modifier(row: Row) -> Callable[[str], Frag]:
         if row.deleted and row.admin:
             return lambda *children: h("del")(h("ins")(*children))
         elif row.deleted:
@@ -144,3 +145,21 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
             ) for registrations in events
         ]
     ))
+
+
+def url(*segments: Union[str, int], **query: Union[str, int]) -> str:
+    builder = []
+    if not segments:
+        builder.append("/")
+    else:
+        for segment in segments:
+            builder.append("/")
+            builder.append(urlquote(str(segment), safe=""))
+    first = True
+    for arg, value in query.items():
+        builder.append("?" if first else "&")
+        first = False
+        builder.append(urlquote(arg, safe=""))
+        builder.append("=")
+        builder.append(urlquote(str(value)))
+    return "".join(builder)

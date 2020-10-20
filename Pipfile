@@ -6,6 +6,10 @@ verify_ssl = true
 [packages]
 aiohttp = "~=3.6.3"
 pytz = "~=2020.1"
+tinyhtml = "~=1.0.0b1"
+
+[pipenv]
+allow_prereleases = true
 
 [scripts]
 server = "python -m cig"
