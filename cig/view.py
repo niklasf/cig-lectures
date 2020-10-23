@@ -177,7 +177,11 @@ def quiz(*, email: Optional[str], statements: List[Statement], answers: Optional
             ),
         ) if email is not None else None,
         h("h2")("True or false?"),
-        h("p")("These following are considered basic questions from ", h("em")("Informatics III"), "."),
+        h("p")(
+            "These following are considered basic questions from ", h("em")("Informatics III"), ". ",
+            "Use these in your decision, if you're ready to take the course. ",
+            "Your answers are anonymous (and therefore obviously not graded).",
+        ),
         h("form", method="POST")(
             h("table")(
                 h("tr", klass={
