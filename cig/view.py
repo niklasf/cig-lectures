@@ -50,9 +50,9 @@ def index() -> Frag:
     ))
 
 
-def login(*, lecture: Lecture, error: Optional[str] = None) -> Frag:
-    return layout(lecture.title, frag(
-        h("h1")("Register for the next ", h("em")(lecture.title), " lecture (step 1/3)"),
+def login(*, title: str, h1: Frag, error: Optional[str] = None) -> Frag:
+    return layout(title, frag(
+        h("h1")(h1),
         h("section")(
             h("form", method="POST")(
                 error and h("p", klass="error")(error),
@@ -67,9 +67,25 @@ def login(*, lecture: Lecture, error: Optional[str] = None) -> Frag:
     ))
 
 
-def link_sent(*, lecture: Lecture, email_text: Optional[str]) -> Frag:
-    return layout(lecture.title, frag(
-        h("h1")("Link sent (step 2/3)"),
+def login_lecture(*, lecture: Lecture, error: Optional[str] = None) -> Frag:
+    return login(
+        title=lecture.title,
+        h1=frag("Register for the next ", h("em")(lecture.title), " lecture (step 1/3)"),
+        error=error,
+    )
+
+
+def login_quiz(*, lecture: Lecture, error: Optional[str] = None) -> Frag:
+    return login(
+        title=lecture.title,
+        h1=frag("Login for ", h("em")(lecture.title), " self assessment quiz"),
+        error=error,
+    )
+
+
+def link_sent(*, title: str, email_text: Optional[str]) -> Frag:
+    return layout(title, frag(
+        h("h1")(title),
         h("section")(
             h("p")("Check your inbox."),
             h("p")(
@@ -150,8 +166,8 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
 
 
 def quiz(*, email: str, statements: List[Statement], answers: List[bool] = []) -> Frag:
-    return layout("Complexity Theory Self Assessment Quiz", frag(
-        h("h1")("Complexity Theory Self Assessment Quiz"),
+    return layout("Complexity Theory", frag(
+        h("h1")(h("em")("Complexity Theory"), " self assessment quiz"),
         h("h2")("What is saved?"),
         h("ul")(
             h("li")("That you, ", h("strong")(email), ", participated"),
@@ -177,7 +193,7 @@ def quiz(*, email: str, statements: List[Statement], answers: List[bool] = []) -
                     ),
                 ) for i, statement, answer in itertools.zip_longest(range(len(statements)), statements, answers)
             ),
-            h("button", type="submit")("Submit answers") if answers else None,
+            h("button", type="submit")("Submit answers") if not answers else None,
         ),
     ))
 

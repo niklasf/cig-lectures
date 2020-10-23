@@ -72,7 +72,7 @@ async def get_lecture(req: aiohttp.web.Request) -> aiohttp.web.Response:
     admin = email is not None and req.query.get("admin", "") == "yes" and cig.data.admin(email)
     if not email:
         # Show login form.
-        return aiohttp.web.Response(text=cig.view.login(lecture=lecture).render(), content_type="text/html")
+        return aiohttp.web.Response(text=cig.view.login_lecture(lecture=lecture).render(), content_type="text/html")
     else:
         # Show registration form.
         today = cig.db.now().date()
@@ -99,7 +99,7 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
         except KeyError:
             raise aiohttp.web.HTTPBadRequest(reason="email required")
         except ValueError as err:
-            return aiohttp.web.Response(text=cig.view.login(lecture=lecture, error=str(err)).render(), content_type="text/html")
+            return aiohttp.web.Response(text=cig.view.login_lecture(lecture=lecture, error=str(err)).render(), content_type="text/html")
 
         token = hmac_email(req.app["secret"], email)
         magic_link = req.app["base_url"].rstrip("/") + cig.view.url(req.match_info["lecture"], email=email, hmac=token)
@@ -127,7 +127,7 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
                     print("Response:", res.status, "-", await res.text())
 
         return aiohttp.web.Response(
-            text=cig.view.link_sent(lecture=lecture, email_text=email_text if req.app["dev"] else None).render(),
+            text=cig.view.link_sent(title="Link sent (step 2/3)", email_text=email_text if req.app["dev"] else None).render(),
             content_type="text/html")
     else:
         # Process registration form.
@@ -166,17 +166,63 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
 @routes.get("/complexity/quiz")
 async def get_quiz(req: aiohttp.web.Request) -> aiohttp.web.Response:
     email = extract_verified_email(req)
-    email = "niklas.fiekas@tu-clausthal.de"
+
     if not email:
         # Show login form
         return aiohttp.web.Response(
-            text=cig.view.login(lecture=cig.data.LECTURES["complexity"]).render(),
+            text=cig.view.login_quiz(lecture=cig.data.LECTURES["complexity"]).render(),
             content_type="text/html")
     else:
+        # TODO: Load answers
+
         # Show quiz.
         return aiohttp.web.Response(
             text=cig.view.quiz(email=email, statements=cig.example_quiz.STATEMENTS).render(),
             content_type="text/html")
+
+
+@routes.post("/complexity/quiz")
+async def post_quiz(req: aiohttp.web.Request) -> aiohttp.web.Response:
+    email = extract_verified_email(req)
+    form = await req.post()
+
+    if not email:
+        # Process login form.
+        try:
+            email = normalize_email(str(form["email"]))
+        except KeyError:
+            raise aiohttp.web.HTTPBadRequest(reason="email required")
+        except ValueError as err:
+            return aiohttp.web.Response(text=cig.view.login_quiz(lecture=cig.data.LECTURES["complexity"], error=str(err)).render(), content_type="text/html")
+
+        token = hmac_email(req.app["secret"], email)
+        magic_link = req.app["base_url"].rstrip("/") + cig.view.url("complexity", "quiz", email=email, hmac=token)
+        print(magic_link)
+
+        email_text = "\n\n".join(line for line in [
+            f"Continue here: {magic_link}",
+            f"---\nAutomated email on behalf of Jürgen Dix and team",
+        ] if line is not None)
+
+        if not req.app["dev"]:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    f"https://api.eu.mailgun.net/v3/{req.app['mailgun_domain']}/messages",
+                    auth=aiohttp.BasicAuth("api", req.app["mailgun_key"]),
+                    data={
+                        "from": f"CIG Lectures <noreply@{req.app['mailgun_domain']}>",
+                        "to": email,
+                        "subject": f"Self assessment quiz for Complexity Theory",
+                        "text": email_text,
+                    }
+                ) as res:
+                    print("Response:", res.status, "-", await res.text())
+
+        return aiohttp.web.Response(
+            text=cig.view.link_sent(title="Link sent", email_text=email_text if req.app["dev"] else None).render(),
+            content_type="text/html")
+    else:
+        assert False # XXX
 
 
 def main(argv: List[str]) -> None:
