@@ -188,6 +188,7 @@ def quiz(*, email: Optional[str], statements: List[Statement], answers: Optional
                     "correct": answer is statement.truth,
                     "incorrect": answer is (not statement.truth),
                 })(
+                    h("td")(i, "."),
                     h("td")(statement.text),
                     h("td")(
                         h("input", type="radio", name=f"stmt-{i}", id=f"stmt-{i}-1", value=1, required=True, checked=answer is True, disabled=answer is not None),
