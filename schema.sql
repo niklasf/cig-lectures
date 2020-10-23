@@ -24,5 +24,6 @@ CREATE TABLE IF NOT EXISTS quiz_answers (
     id VARCHAR(32) PRIMARY KEY,
     quiz VARCHAR(128) NOT NULL,
     correct INTEGER NOT NULL,
-    answers TEXT NOT NULL
+    answers TEXT NOT NULL,
+    first BOOLEAN NOT NULL
 );

@@ -164,20 +164,24 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
 
 
 @routes.get("/complexity/quiz")
+@routes.get("/complexity/quiz/{submission}")
 async def get_quiz(req: aiohttp.web.Request) -> aiohttp.web.Response:
     email = extract_verified_email(req)
+    submission = req.app["db"].quiz_submission(quiz="complexity", id=req.match_info["submission"]) if "submission" in req.match_info else None
 
-    if not email:
+    if email or submission:
+        # Show quiz.
+        return aiohttp.web.Response(
+            text=cig.view.quiz(
+                email=email,
+                statements=cig.example_quiz.STATEMENTS,
+                answers=submission.answers if submission else None,
+            ).render(),
+            content_type="text/html")
+    else:
         # Show login form
         return aiohttp.web.Response(
             text=cig.view.login_quiz(lecture=cig.data.LECTURES["complexity"]).render(),
-            content_type="text/html")
-    else:
-        # TODO: Load answers
-
-        # Show quiz.
-        return aiohttp.web.Response(
-            text=cig.view.quiz(email=email, statements=cig.example_quiz.STATEMENTS).render(),
             content_type="text/html")
 
 
@@ -228,7 +232,7 @@ async def post_quiz(req: aiohttp.web.Request) -> aiohttp.web.Response:
             answer = form.get(f"stmt-{i}", "") == "1"
             answers.append(int(answer))
             correct += answer == statement.truth
-        submission = req.app["db"].submit_quiz(correct, answers)
+        submission = req.app["db"].submit_quiz(quiz="complexity", name=email, correct=correct, answers=answers)
         raise aiohttp.web.HTTPFound(location=cig.view.url("complexity", "quiz", submission))
 
 

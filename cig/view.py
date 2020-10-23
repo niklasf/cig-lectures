@@ -165,15 +165,17 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
     ))
 
 
-def quiz(*, email: str, statements: List[Statement], answers: List[bool] = []) -> Frag:
+def quiz(*, email: Optional[str], statements: List[Statement], answers: Optional[List[bool]]) -> Frag:
     return layout("Complexity Theory", frag(
         h("h1")(h("em")("Complexity Theory"), " self assessment quiz"),
-        h("h2")("What is saved?"),
-        h("ul")(
-            h("li")("That you, ", h("strong")(email), ", participated"),
-            h("li")("Your answers"),
-            h("li")("But no connection between these two"),
-        ),
+        frag(
+            h("h2")("What is saved?"),
+            h("ul")(
+                h("li")("That you, ", h("strong")(email), ", participated"),
+                h("li")("Your answers"),
+                h("li")("But no connection between these two"),
+            ),
+        ) if email is not None else None,
         h("h2")("True or false?"),
         h("p")("These following are considered basic questions from ", h("em")("Informatics III"), "."),
         h("form", method="POST")(
@@ -191,7 +193,7 @@ def quiz(*, email: str, statements: List[Statement], answers: List[bool] = []) -
                         h("input", type="radio", name=f"stmt-{i})", id=f"stmt-{i}-0", value=0, required=True, checked=answer is False, disabled=answer is not None),
                         h("label", for_=f"stmt-{i}-0")("False"),
                     ),
-                ) for i, statement, answer in itertools.zip_longest(range(len(statements)), statements, answers)
+                ) for i, statement, answer in itertools.zip_longest(range(len(statements)), statements, answers or [])
             ),
             h("button", type="submit")("Submit answers") if not answers else None,
         ),
