@@ -163,6 +163,22 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
         return await get_lecture(req)
 
 
+@routes.get("/complexity/quiz")
+async def get_quiz(req: aiohttp.web.Request) -> aiohttp.web.Response:
+    email = extract_verified_email(req)
+    email = "niklas.fiekas@tu-clausthal.de"
+    if not email:
+        # Show login form
+        return aiohttp.web.Response(
+            text=cig.view.login(lecture=cig.data.LECTURES["complexity"]).render(),
+            content_type="text/html")
+    else:
+        # Show quiz.
+        return aiohttp.web.Response(
+            text=cig.view.quiz(email=email, statements=cig.example_quiz.STATEMENTS).render(),
+            content_type="text/html")
+
+
 def main(argv: List[str]) -> None:
     logging.basicConfig(level=logging.DEBUG)
 

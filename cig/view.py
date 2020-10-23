@@ -2,12 +2,14 @@
 
 import pytz
 import datetime
+import itertools
 
 import cig.data
 import cig.db
 
 from cig.db import Registrations, Row
 from cig.data import Lecture
+from cig.example_quiz import Statement
 from tinyhtml import Frag, h, html, raw, frag
 from urllib.parse import quote as urlquote
 from typing import List, Optional, Callable, Union
@@ -144,6 +146,39 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                 ) if admin or not registrations.has(email) else None,
             ) for registrations in events
         ],
+    ))
+
+
+def quiz(*, email: str, statements: List[Statement], answers: List[bool] = []) -> Frag:
+    return layout("Complexity Theory Self Assessment Quiz", frag(
+        h("h1")("Complexity Theory Self Assessment Quiz"),
+        h("h2")("What is saved?"),
+        h("ul")(
+            h("li")("That you, ", h("strong")(email), ", participated"),
+            h("li")("Your answers"),
+            h("li")("But no connection between these two"),
+        ),
+        h("h2")("True or false?"),
+        h("p")("These following are considered basic questions from ", h("em")("Informatics III"), "."),
+        h("form", method="POST")(
+            h("table")(
+                h("tr", klass={
+                    "correct": answer is statement.truth,
+                    "incorrect": answer is (not statement.truth),
+                })(
+                    h("td")(statement.text),
+                    h("td")(
+                        h("input", type="radio", name=f"stmt-{i})", id=f"stmt-{i}-1", value=1, required=True, checked=answer is True, disabled=answer is not None),
+                        h("label", for_=f"stmt-{i}-1")("True"),
+                    ),
+                    h("td")(
+                        h("input", type="radio", name=f"stmt-{i})", id=f"stmt-{i}-0", value=0, required=True, checked=answer is False, disabled=answer is not None),
+                        h("label", for_=f"stmt-{i}-0")("False"),
+                    ),
+                ) for i, statement, answer in itertools.zip_longest(range(len(statements)), statements, answers)
+            ),
+            h("button", type="submit")("Submit answers") if answers else None,
+        ),
     ))
 
 

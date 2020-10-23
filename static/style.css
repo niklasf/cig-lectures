@@ -45,11 +45,11 @@ table {
   border-collapse: collapse;
   margin-bottom: 1em;
 }
-tr.me {
+tr.me, tr.correct > td:first-child {
   background: #008C4F;
   color: white;
 }
-tr.overhang {
+tr.overhang, tr.incorrect > td:first-child {
   background: #8C1C00;
   color: white;
 }
@@ -59,7 +59,7 @@ th, td {
   padding: 0.5em;
 }
 
-input {
+input[type=text] {
   width: 100%;
   max-width: 400px;
 }
