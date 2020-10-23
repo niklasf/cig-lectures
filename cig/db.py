@@ -7,6 +7,7 @@ import datetime
 import sqlite3
 import dataclasses
 import pytz
+import secrets
 
 from typing import Tuple, Optional, List, Iterator
 from cig.data import Event
@@ -44,6 +45,45 @@ class Database:
                 return Registration(row[0], row[1], row[2], datetime.datetime.fromisoformat(row[3]), row[4], row[5])
 
             return Registrations(event, list(map(make_record, self.conn.execute("SELECT id, event, name, time, admin, deleted FROM registrations WHERE event = ? ORDER BY id ASC", (event.id, )))))
+
+    def submit_quiz(self, *, quiz: str, name: str, correct: int, answers: List[bool]) -> str:
+        with self.conn:
+            try:
+                self.conn.execute("INSERT INTO quiz_participants (quiz, name) VALUES (?, ?)", (quiz, name))
+            except sqlite3.IntegrityError:
+                first = False
+            else:
+                first = True
+
+        id = secrets.token_hex(16)
+
+        self.conn.execute("INSERT INTO quiz_answers (id, quiz, correct, answers, first) VALUES (?, ?, ?, ?, ?)", (
+            id,
+            quiz,
+            correct,
+            ",".join(str(int(a)) for a in answers),
+        ))
+
+        return id
+
+    def quiz_submission(self, *, quiz: str, id: str) -> Optional[QuizSubmission]:
+        with self.conn:
+            cursor = self.conn.execute("SELECT FROM quiz_answers id, quiz, correct, answers WHERE id = ? AND quiz = ?", (id, quiz))
+            row = cursor.fetchone()
+            return QuizSubmission(
+                id=row[0],
+                quiz=row[1],
+                correct=row[2],
+                answers=[bool(int(a)) for a in row[3].split(",")],
+            ) if row is not None else row
+
+
+@dataclasses.dataclass
+class QuizSubmission:
+    id: str
+    quiz: str
+    correct: int
+    answers: List[bool]
 
 
 @dataclasses.dataclass
