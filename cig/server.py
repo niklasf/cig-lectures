@@ -167,7 +167,12 @@ async def post_lecture(req: aiohttp.web.Request) -> aiohttp.web.StreamResponse:
 @routes.get("/complexity/quiz/{submission}")
 async def get_quiz(req: aiohttp.web.Request) -> aiohttp.web.Response:
     email = extract_verified_email(req)
-    submission = req.app["db"].quiz_submission(quiz="complexity", id=req.match_info["submission"]) if "submission" in req.match_info else None
+
+    submission = None
+    if "submission" in req.match_info:
+        submission = req.app["db"].quiz_submission(quiz="complexity", id=req.match_info["submission"])
+        if not submission:
+            raise aiohttp.web.HTTPNotFound(reason="quiz submission not found")
 
     if email or submission:
         # Show quiz.

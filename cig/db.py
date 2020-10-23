@@ -62,13 +62,14 @@ class Database:
             quiz,
             correct,
             ",".join(str(int(a)) for a in answers),
+            first,
         ))
 
         return id
 
     def quiz_submission(self, *, quiz: str, id: str) -> Optional[QuizSubmission]:
         with self.conn:
-            cursor = self.conn.execute("SELECT FROM quiz_answers id, quiz, correct, answers WHERE id = ? AND quiz = ?", (id, quiz))
+            cursor = self.conn.execute("SELECT id, quiz, correct, answers FROM quiz_answers WHERE id = ? AND quiz = ?", (id, quiz))
             row = cursor.fetchone()
             return QuizSubmission(
                 id=row[0],
