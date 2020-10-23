@@ -181,6 +181,7 @@ async def get_quiz(req: aiohttp.web.Request) -> aiohttp.web.Response:
                 email=email,
                 statements=cig.example_quiz.STATEMENTS,
                 answers=submission.answers if submission else None,
+                correct=submission.correct if submission else None,
             ).render(),
             content_type="text/html")
     else:
@@ -235,7 +236,7 @@ async def post_quiz(req: aiohttp.web.Request) -> aiohttp.web.Response:
         correct = 0
         for i, statement in enumerate(cig.example_quiz.STATEMENTS):
             answer = form.get(f"stmt-{i}", "") == "1"
-            answers.append(int(answer))
+            answers.append(answer)
             correct += answer == statement.truth
         submission = req.app["db"].submit_quiz(quiz="complexity", name=email, correct=correct, answers=answers)
         raise aiohttp.web.HTTPFound(location=cig.view.url("complexity", "quiz", submission))

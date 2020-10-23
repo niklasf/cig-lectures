@@ -165,7 +165,7 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
     ))
 
 
-def quiz(*, email: Optional[str], statements: List[Statement], answers: Optional[List[bool]]) -> Frag:
+def quiz(*, email: Optional[str], statements: List[Statement], answers: Optional[List[bool]], correct: Optional[int]) -> Frag:
     return layout("Complexity Theory", frag(
         h("h1")(h("em")("Complexity Theory"), " self assessment quiz"),
         frag(
@@ -186,16 +186,17 @@ def quiz(*, email: Optional[str], statements: List[Statement], answers: Optional
                 })(
                     h("td")(statement.text),
                     h("td")(
-                        h("input", type="radio", name=f"stmt-{i})", id=f"stmt-{i}-1", value=1, required=True, checked=answer is True, disabled=answer is not None),
+                        h("input", type="radio", name=f"stmt-{i}", id=f"stmt-{i}-1", value=1, required=True, checked=answer is True, disabled=answer is not None),
                         h("label", for_=f"stmt-{i}-1")("True"),
                     ),
                     h("td")(
-                        h("input", type="radio", name=f"stmt-{i})", id=f"stmt-{i}-0", value=0, required=True, checked=answer is False, disabled=answer is not None),
+                        h("input", type="radio", name=f"stmt-{i}", id=f"stmt-{i}-0", value=0, required=True, checked=answer is False, disabled=answer is not None),
                         h("label", for_=f"stmt-{i}-0")("False"),
                     ),
                 ) for i, statement, answer in itertools.zip_longest(range(len(statements)), statements, answers or [])
             ),
             h("button", type="submit")("Submit answers") if not answers else None,
+            h("p")("You scored ", h("strong")(round(correct / len(statements) * 100), "%"), ".") if correct is not None else None,
         ),
     ))
 
