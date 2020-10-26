@@ -124,7 +124,7 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                 h("h2", id=f"event-{registrations.event.id}")(
                     registrations.event.title, " (", registrations.event.date.strftime("%a, %d.%m."), ")",
                 ),
-                h("p")("Please reserve a seat only if you will physically attend this lecture in ", h("strong")(registrations.event.location), "."),
+                h("p")("Please reserve a seat only if you will physically attend this lecture in ", h("strong")(registrations.event.location), " on this particular day."),
                 h("p")("Please come only after you successfully reserved a seat. There are ", h("strong")(f"{registrations.event.seats} seats"), " in total."),
                 h("table")(
                     h("thead")(
@@ -155,7 +155,7 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                         ) for row in registrations.rows() if row.name == email or admin
                     ])
                 ) if admin or registrations.has(email) else None,
-                h("form", method="POST", onsubmit="return confirm('Please register only if you will physically attend this lecture.')" if not admin else None)(
+                h("form", method="POST", onsubmit="return confirm('Please register only if you will physically attend the lecture on this particular day.')" if not admin else None)(
                     h("input", type="text", name="name", placeholder=email) if admin else None,
                     h("input", type="hidden", name="reserve", value=registrations.event.id),
                     h("button", type="submit")("Reserve seat (admin)" if admin else "Reserve seat"),
