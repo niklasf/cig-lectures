@@ -112,6 +112,9 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
         h("section")(
             h("h2")("Signup not open, yet"),
             h("p")("Signup opens on the day of each lecture. Please come only after you have successfully reserved a seat."),
+            h("p")(
+                h("button", disabled=True)("Reserve seat"),
+            ),
         ) if not events else [
             h("section", klass={
                 "not-today": registrations.event.date != today,
