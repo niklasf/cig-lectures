@@ -111,13 +111,13 @@ class Registrations:
         self.registrations = registrations
 
     def rows(self) -> Iterator[Row]:
-        n = 1
+        n = self.event.seats
         for registration in self.registrations:
             if registration.deleted:
                 yield Row(None, registration.name, registration.time, registration.admin, True)
             else:
                 yield Row(n, registration.name, registration.time, registration.admin, False)
-                n += 1
+                n -= 1
 
     def has(self, email: str) -> bool:
         return any(row.name == email for row in self.rows())
