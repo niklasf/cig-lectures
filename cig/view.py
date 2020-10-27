@@ -109,11 +109,6 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
 
     return layout(lecture.title, frag(
         h("h1", klass="no-print")("Register for the next ", h("em")(lecture.title), " lecture (step 3/3)"),
-        h("section", klass="no-print")(
-            h("h2")("Your contact information"),
-            h("p")("You are logged in as ", h("strong")(email), "."),
-            h("p")("We do not need additional contact information at this time. But please keep your details updated with the Studentensekretariat."),
-        ),
         h("section")(
             h("h2")("Signup not open, yet"),
             h("p")("Signup opens on the day of each lecture. Please come only after you have successfully reserved a seat."),
@@ -162,6 +157,11 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
                 ) if admin or not registrations.has(email) else None,
             ) for registrations in events
         ],
+        h("section", klass="no-print")(
+            h("h2")("Your contact information"),
+            h("p")("You are logged in as ", h("strong")(email), "."),
+            h("p")("We do not need additional contact information at this time. But please keep your details updated with the Studentensekretariat."),
+        ),
     ))
 
 
