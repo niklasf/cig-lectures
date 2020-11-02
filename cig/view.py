@@ -110,8 +110,10 @@ def register(*, lecture: Lecture, email: str, events: List[Registrations], admin
     return layout(lecture.title, frag(
         h("h1", klass="no-print")("Register for the next ", h("em")(lecture.title), " lecture (step 3/3)"),
         h("section")(
-            h("h2")("Signup not open, yet"),
-            h("p")("Signup opens on the day of each lecture. Please come only after you have successfully reserved a seat."),
+            h("h2")("We are moving online until further notice"),
+            h("p")("So no seat reservations are required."),
+            #h("h2")("Signup not open, yet"),
+            #h("p")("Signup opens on the day of each lecture. Please come only after you have successfully reserved a seat."),
             h("p")(
                 h("button", disabled=True)("Reserve seat"),
             ),
